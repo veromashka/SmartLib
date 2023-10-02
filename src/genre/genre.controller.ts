@@ -1,31 +1,23 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { Genres as GenresModel } from '@prisma/client';
 import { GenreService } from './genre.service';
+import { CreateGenreRequestDto } from './dto/request/create-genre.dto';
 
-@Controller('genres')
+@Controller('genre')
 export class GenreController {
   constructor(private readonly genreService: GenreService) {}
-
-  // @Post('post')
-  // async createGenre(
-  //   @Body()
-  //   postData: {
-  //     title: string;
-  //     author: string;
-  //     genre: string;
-  //     releaseYear: number;
-  //   },
-  // ): Promise<GenresModel> {
-  //   const { title, author, releaseYear } = postData;
-  //   return this.genreService.createGenre({
-  //     title,
-  //     author,
-  //     releaseYear,
-  //   });
-  // }
-
+  @Post('new')
+  async createGenre(@Body() data: CreateGenreRequestDto): Promise<GenresModel> {
+    return this.genreService.createGenre(data);
+  }
   @Get('all')
   async getAllGenres(): Promise<GenresModel[]> {
-    return this.genreService.getAll();
+    // console.log("contr")
+    return await this.genreService.getAll();
   }
+  @Get(':id')
+  async findById(@Param('id') id: string): Promise<GenresModel> {
+    return this.genreService.getById({ id: id });
+  }
+
 }

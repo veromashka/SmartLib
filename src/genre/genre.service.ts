@@ -1,6 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Genres, Prisma } from '@prisma/client';
+import { GenreRepository} from './genre.repository'
+import { CreateGenreRequestDto } from './dto/request/create-genre.dto';
 // import { Logger, Injectable } from '@nestjs/common';
 
 //1. Logger
@@ -13,21 +15,19 @@ import { Genres, Prisma } from '@prisma/client';
 
 @Injectable()
 export class GenreService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private genreRepository:GenreRepository) {}
   private readonly logger = new Logger(GenreService.name);
 
   //CREATE
-  async createGenre(data: Prisma.GenresCreateInput): Promise<Genres> {
-    this.logger.log('CREATE NEW BOOK');
-    // const genre = this.prisma.genres.getOne() "romance"
-    return this.prisma.genres.create({
-      data,
-    });
+  async createGenre(data: CreateGenreRequestDto): Promise<Genres> {
+    return this.genreRepository.create({...data});
   }
-  //GET ALL
-  async getAll(): Promise<Genres[]> {
-    this.logger.log('GET ALL BOOKS');
-    return this.prisma.genres.findMany();
+  async getById(id: Prisma.GenresWhereUniqueInput){
+    return await this.genreRepository.getById(id)
+  }
+  async getAll() {
+    console.log("Click")
+    return await this.genreRepository.getAll();
   }
   //UPDATE
   // async updateGenreByID(params: {
