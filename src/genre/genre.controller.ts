@@ -19,5 +19,4 @@ export class GenreController {
   async findById(@Param('id') id: string): Promise<GenresModel> {
     return this.genreService.getById({ id: id });
   }
-
 }

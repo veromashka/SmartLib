@@ -5,13 +5,6 @@ import { GenreRepository} from './genre.repository'
 import { CreateGenreRequestDto } from './dto/request/create-genre.dto';
 // import { Logger, Injectable } from '@nestjs/common';
 
-//1. Logger
-//2. Genres model CRUD
-// Ask about DTO
-
-//3. User Auth registr token login
-//4.boookGenres name fields
-//
 
 @Injectable()
 export class GenreService {
@@ -20,13 +13,12 @@ export class GenreService {
 
   //CREATE
   async createGenre(data: CreateGenreRequestDto): Promise<Genres> {
-    return this.genreRepository.create({...data});
+    return this.genreRepository.create({ ...data });
   }
   async getById(id: Prisma.GenresWhereUniqueInput){
-    return await this.genreRepository.getById(id)
+    return await this.genreRepository.getById(id);
   }
   async getAll() {
-    console.log("Click")
     return await this.genreRepository.getAll();
   }
   //UPDATE
