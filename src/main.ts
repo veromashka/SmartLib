@@ -9,7 +9,7 @@ import { ValidationPipe } from '@nestjs/common';
   });
   app.setGlobalPrefix('api');
 
-  app.useGlobalPipes(new ValidationPipe());
+  // app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(3000);
 })();

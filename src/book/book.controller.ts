@@ -27,16 +27,16 @@ export class BookController {
   // async findAll(): Promise<BookModel[]> {
   //   return this.bookService.getAll();
   // }
-  @Get("all")
+  @Get('all')
   async findAll(): Promise<BookModel[]> {
     return this.bookService.getAll();
   }
-
+  // //TODO: GET by ID
   // @Get(':id')
   // async findById(@Param('id') id: string): Promise<BookModel> {
-  //   return this.bookRepository.findOne({ id: id });
+  //   return this.bookService.findOne({ id: id });
   // }
-  // //TODO: change data type
+
 
   // @Put(':id')
   // async update(@Param('id') id: string, @Body() data: UpdateBookRequestDto ): Promise<BookModel> {
