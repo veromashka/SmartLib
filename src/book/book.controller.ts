@@ -5,54 +5,46 @@ import {
   Get,
   Param,
   Delete,
-  Put,
-} from '@nestjs/common';
-import { Books as BookModel } from '@prisma/client';
-// import { BookService } from './book.service';
-import { BookRepository } from './book.repository';
+  Put
+} from "@nestjs/common";
+import { Books as BookModel } from "@prisma/client";
+import { CreateBookRequestDto } from "./dto/request/create-book.dto";
+import { BookService } from "./book.service";
+import { UpdateBookRequestDto } from "./dto/request/update-book.dto";
 
-@Controller('book')
+@Controller("book")
 export class BookController {
-  constructor(private readonly bookRepository: BookRepository) {}
+  constructor(private readonly bookService: BookService) {
+  }
 
-  @Post('/')
+  @Post("new")
   async createBook(
-    @Body()
-    postData: {
-      title: string;
-      author: string;
-      genre: string;
-      releaseYear: number;
-    },
-  ): Promise<BookModel> {
-    const { title, author, releaseYear } = postData;
-    return this.bookRepository.create({
-      title,
-      author,
-      releaseYear,
-    });
+    @Body() data: CreateBookRequestDto): Promise<BookModel> {
+    return this.bookService.create(data);
   }
 
-  @Get('/all')
+  // @Get('/all')
+  // async findAll(): Promise<BookModel[]> {
+  //   return this.bookService.getAll();
+  // }
+  @Get("all")
   async findAll(): Promise<BookModel[]> {
-    return this.bookRepository.findAll();
+    return this.bookService.getAll();
   }
-  @Get(':id')
-  async findById(@Param('id') id: string): Promise<BookModel> {
-    console.log(id);
-    return this.bookRepository.findOne({ id: id });
-  }
+
+  // @Get(':id')
+  // async findById(@Param('id') id: string): Promise<BookModel> {
+  //   return this.bookRepository.findOne({ id: id });
+  // }
+  // //TODO: change data type
 
   // @Put(':id')
-  // async publishPost(@Param('id') id: string): Promise<BookModel> {
-  //   return this.bookRepository.updateByid({
-  //     data,
-  //     where: {id:id},
-  //   });
+  // async update(@Param('id') id: string, @Body() data: UpdateBookRequestDto ): Promise<BookModel> {
+  //   return this.bookService.update(id, data);
   // }
 
-  @Delete(':id')
-  async deletePost(@Param('id') id: string): Promise<BookModel> {
-    return this.bookRepository.deleteByid({ id: id });
-  }
+  // @Delete(':id')
+  // async deletePost(@Param('id') id: string): Promise<BookModel> {
+  //   return this.bookRepository.delete({ id: id });
+  // }
 }

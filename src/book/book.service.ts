@@ -1,31 +1,30 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
-import { Books, Prisma } from '@prisma/client';
-// import { Logger, Injectable } from '@nestjs/common';
+import { BookRepository } from './book.repository';
+import { CreateBookRequestDto } from './dto/request/create-book.dto';
+import { UpdateBookRequestDto } from './dto/request/update-book.dto';
+import { Prisma } from '@prisma/client';
 
-//1. Logger
-//2. Genres model CRUD
-// Ask about DTO
-
-//3. User Auth registr token login
-//4.boookGenres name fields
-//
 
 @Injectable()
 export class BookService {
-  constructor(private prisma: PrismaService) {}
-  private readonly logger = new Logger(BookService.name);
+  constructor(private bookRepository: BookRepository) {}
+  // private readonly logger = new Logger(BookService.name);
 
-  async createBook(data: Prisma.BooksCreateInput): Promise<Books> {
-    this.logger.log('CREATE NEW BOOK');
-    // const genre = this.prisma.genres.getOne() "romance"
-    return this.prisma.books.create({
-      data,
-    });
+  async create(data: CreateBookRequestDto){
+    // data. get Genres from genreService
+    const createData: Prisma.BooksCreateInput = {
+      title: data.title,
+      author: data.author,
+      releaseYear: data.releaseYear
+
+    }
+    return await this.bookRepository.create( createData )
+  }
+  async getAll() {
+    return await this.bookRepository.findAll()
   }
 
-  async getAllBook(): Promise<Books[]> {
-    this.logger.log('GET ALL BOOKS');
-    return this.prisma.books.findMany();
-  }
+  // async update(id: string, data: UpdateBookRequestDto){
+  //   return await this.bookRepository.update(id, data)
+  // }
 }

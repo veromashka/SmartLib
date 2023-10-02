@@ -34,6 +34,7 @@ model Books {
   title       String
   author      String
   releaseYear Int
+  category    Categories @default(FOR_CHILDREN)
   genre       Genres[]
 }
 
