@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { BookRepository } from './book.repository';
 import { CreateBookRequestDto } from './dto/request/create-book.dto';
 import { GenreService } from '../genre/genre.service';
-import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class BookService {
