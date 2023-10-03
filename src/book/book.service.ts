@@ -21,10 +21,8 @@ export class BookService {
       author,
       releaseYear,
       genre: {
-        // this creates new row in `UsersInvestments`
         create: [
           {
-            // Here we say that this new row user will be one of existing users
             genre: {
               connect: {
                 id: string.toString(),

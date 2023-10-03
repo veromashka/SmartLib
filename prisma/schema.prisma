@@ -18,6 +18,7 @@ model Users {
   password  String
   createdAt DateTime   @default(now())
   profile   Profiles[]
+  order     Orders[]
 }
 
 model Profiles {
@@ -35,6 +36,8 @@ model Books {
   author      String
   releaseYear Int
   category    Categories   @default(FOR_CHILDREN)
+  order       Orders       @relation(fields: [orderId], references: [id])
+  orderId     String       @unique
   genre       BookGenres[]
 }
 
@@ -44,7 +47,7 @@ model Genres {
   book BookGenres[]
 }
 
-  model BookGenres {
+model BookGenres {
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
   book      Books     @relation(fields: [bookId], references: [id])
@@ -52,7 +55,16 @@ model Genres {
   bookId    String
   genreId   String
 
-@@id([genreId, bookId])
+  @@id([genreId, bookId])
+}
+
+model Orders {
+  id     String  @id @default(uuid())
+  user   Users   @relation(fields: [userId], references: [id])
+  userId String  @unique
+  book   Books[]
+  paid   Boolean
+  term   Int
 }
 
 enum Categories {

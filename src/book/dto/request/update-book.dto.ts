@@ -1,24 +1,19 @@
-import {  IsInt, IsNotEmpty,  IsOptional,  IsString} from 'class-validator';
+import { IsOptional } from 'class-validator';
 import { Categories } from 'src/common/enums';
 
 export class UpdateBookRequestDto {
   @IsOptional()
-  title?: string
-
+  title?: string;
 
   @IsOptional()
-  author: string
-
+  author: string;
 
   @IsOptional()
   releaseYear: number;
 
-
-  // @IsOptional()
-  // genre: string[]
-
+  @IsOptional()
+  genre: string[];
 
   @IsOptional()
-  category: Categories
-
+  category: Categories;
 }
