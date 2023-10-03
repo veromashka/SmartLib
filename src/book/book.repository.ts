@@ -2,7 +2,7 @@ import { PrismaService } from 'src/prisma.service';
 import { Books, Prisma } from '@prisma/client';
 import { Injectable, Logger } from '@nestjs/common';
 import { CreateBookRequestDto } from './dto/request/create-book.dto';
-import { UpdateBookRequestDto} from './dto/request/update-book.dto'
+import { UpdateBookRequestDto } from './dto/request/update-book.dto';
 
 @Injectable()
 export class BookRepository {
@@ -10,7 +10,7 @@ export class BookRepository {
   private readonly logger = new Logger(BookRepository.name);
 
   async create(createDto: Prisma.BooksCreateInput) {
-    return await this.prisma.books.create({
+    return this.prisma.books.create({
       data: createDto,
     });
   }
@@ -20,9 +20,9 @@ export class BookRepository {
   async findAll(): Promise<Books[]> {
     return await this.prisma.books.findMany();
   }
-  // async update(id: string, updateData: UpdateBookRequestDto){
-  //   return await this.prisma.books.update({ where: {id}, data: updateData });
-  // }
+  async update(id: string, updateData: UpdateBookRequestDto) {
+    return await this.prisma.books.update({ where: { id }, data: updateData });
+  }
   async delete(where: Prisma.BooksWhereUniqueInput): Promise<Books> {
     return await this.prisma.books.delete({ where });
   }

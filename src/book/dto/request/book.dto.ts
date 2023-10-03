@@ -28,5 +28,5 @@ export class BookRequestDto {
   // "each" tells class-validator to run the validation on each item of the array
   @IsString({ each: true })
   @ArrayMinSize(1)
-  genre: string[];
+  genres: string[];
 }
