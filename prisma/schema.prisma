@@ -20,6 +20,12 @@ model Users {
   profile   Profiles[]
 }
 
+model Order{
+id        String   @id @default(uuid())
+order Date
+
+}
+
 model Profiles {
   id          String @id @default(uuid())
   phoneNumber Int
