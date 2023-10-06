@@ -12,7 +12,6 @@ export class GenreController {
   }
   @Get('all')
   async getAllGenres(): Promise<GenresModel[]> {
-    // console.log("contr")
     return await this.genreService.getAll();
   }
   @Get(':id')

@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { BookRepository } from './book.repository';
 import { CreateBookRequestDto } from './dto/request/create-book.dto';
 import { UpdateBookRequestDto } from './dto/request/update-book.dto';
@@ -20,39 +24,50 @@ export class BookService {
           },
         };
       });
-
-      // TODO: get all genres and map them to know where id of genre is sane with genreId in book input
+      // await this.logger.log('POST');
       return await this.bookRepository.create({
         title,
         author,
         releaseYear,
         category,
+        // orders: [],
         genre: {
           create,
         },
       });
     } catch (e) {
-      throw new Error(e.message);
+      // this.logger.error(e);
+      throw new BadRequestException('Something bad happened', {
+        cause: new Error(),
+        description: 'Some error description',
+      });
     }
   }
 
   async getAll() {
+    // this.logger.log('GET ALL');
     return await this.bookRepository.findAll();
   }
 
   //TODO
+  async getById(id: string) {
+    return await this.bookRepository.findOne({ id });
+  }
+
   async update(id: string, data: UpdateBookRequestDto) {
     try {
       return await this.bookRepository.update(id, data);
     } catch (e) {
-      throw new Error(e.message);
+      throw new BadRequestException(e.message, {
+        cause: new Error(),
+      });
     }
   }
   async deleteById(id: string) {
     try {
       return await this.bookRepository.delete({ id: id });
     } catch (e) {
-      throw new Error(e.message);
+      throw new InternalServerErrorException();
     }
   }
 }

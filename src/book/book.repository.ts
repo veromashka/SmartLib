@@ -1,13 +1,12 @@
 import { PrismaService } from 'src/prisma.service';
 import { Books, Prisma } from '@prisma/client';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateBookRequestDto } from './dto/request/create-book.dto';
 import { UpdateBookRequestDto } from './dto/request/update-book.dto';
 
 @Injectable()
 export class BookRepository {
   constructor(private prisma: PrismaService) {}
-  private readonly logger = new Logger(BookRepository.name);
 
   async create(createDto: Prisma.BooksCreateInput) {
     return this.prisma.books.create({

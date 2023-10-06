@@ -4,11 +4,17 @@ import { BookService } from './book.service';
 import { PrismaService } from 'src/prisma.service';
 import { BookRepository } from './book.repository';
 import { GenreService } from '../genre/genre.service';
-import { GenreRepository } from "../genre/genre.repository";
+import { GenreRepository } from '../genre/genre.repository';
 
 @Module({
-  providers: [BookService , GenreService, GenreRepository, BookRepository, PrismaService],
+  providers: [
+    BookService,
+    BookRepository,
+    GenreService,
+    GenreRepository,
+    PrismaService,
+  ],
   controllers: [BookController],
-  exports: [BookService, BookRepository]
+  exports: [BookService],
 })
 export class BooksModule {}

@@ -20,17 +20,17 @@ model Users {
   password  String
   createdAt DateTime   @default(now())
   profile   Profiles[]
-  // orders    Orders[]
+  orders    Orders[]
 }
 
-// model Orders {
-//   id      String  @id @default(uuid())
-//   paid    Boolean
-//   user    Users?  @relation(fields: [userId], references: [id])
-//   userId  String?
-//   book   Books?  @relation(fields: [bookId], references: [id])
-//   bookId String?
-// }
+model Orders {
+  id      String  @id @default(uuid())
+  paid    Boolean
+  user    Users?  @relation(fields: [userId], references: [id])
+  userId  String?
+  book   Books?  @relation(fields: [bookId], references: [id])
+  bookId String?
+}
 
 model Profiles {
   id          String @id @default(uuid())
@@ -48,7 +48,7 @@ model Books {
   releaseYear Int
   category    Categories   @default(FOR_CHILDREN)
   genre       BookGenres[]
-  // orders      Orders[]
+  orders      Orders[]
 }
 
 model Genres {
