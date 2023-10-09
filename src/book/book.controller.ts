@@ -6,53 +6,44 @@ import {
   Param,
   Delete,
   Put,
+  UseFilters,
 } from '@nestjs/common';
 import { Books as BookModel } from '@prisma/client';
-// import { BookService } from './book.service';
-import { BookRepository } from './book.repository';
+import { CreateBookRequestDto } from './dto/request/create-book.dto';
+import { BookService } from './book.service';
+import { UpdateBookRequestDto } from './dto/request/update-book.dto';
+import { HttpExceptionFilter } from '../http-exception.filter';
 
 @Controller('book')
+@UseFilters(new HttpExceptionFilter())
 export class BookController {
-  constructor(private readonly bookRepository: BookRepository) {}
+  constructor(private readonly bookService: BookService) {}
 
-  @Post('/')
-  async createBook(
-    @Body()
-    postData: {
-      title: string;
-      author: string;
-      genre: string;
-      releaseYear: number;
-    },
-  ): Promise<BookModel> {
-    const { title, author, releaseYear } = postData;
-    return this.bookRepository.create({
-      title,
-      author,
-      releaseYear,
-    });
+  @Post('new')
+  async createBook(@Body() data: CreateBookRequestDto): Promise<BookModel> {
+    return this.bookService.create(data);
   }
 
-  @Get('/all')
+  @Get('all')
   async findAll(): Promise<BookModel[]> {
-    return this.bookRepository.findAll();
+    return this.bookService.getAll();
   }
+  // //TODO: GET by ID
   @Get(':id')
   async findById(@Param('id') id: string): Promise<BookModel> {
-    console.log(id);
-    return this.bookRepository.findOne({ id: id });
+    return this.bookService.getById(id);
   }
 
-  // @Put(':id')
-  // async publishPost(@Param('id') id: string): Promise<BookModel> {
-  //   return this.bookRepository.updateByid({
-  //     data,
-  //     where: {id:id},
-  //   });
-  // }
+  @Put(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() data: UpdateBookRequestDto,
+  ): Promise<BookModel> {
+    return this.bookService.update(id, data);
+  }
 
   @Delete(':id')
   async deletePost(@Param('id') id: string): Promise<BookModel> {
-    return this.bookRepository.deleteByid({ id: id });
+    return this.bookService.deleteById(id);
   }
 }
