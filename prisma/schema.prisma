@@ -26,8 +26,8 @@ model Orders {
   createdAt DateTime
   userId    String?
   bookId    String?
-  book      Books?   @relation(fields: [bookId], references: [id])
-  user      Users?   @relation(fields: [userId], references: [id])
+  book      Books?   @relation(fields: [bookId], references: [id], onUpdate: Cascade)
+  user      Users?   @relation(fields: [userId], references: [id], onUpdate: Cascade)
 }
 
 model Profiles {
@@ -38,7 +38,7 @@ model Profiles {
   lastName    String
   country     String
   userId      String @unique
-  user        Users  @relation(fields: [userId], references: [id])
+  user        Users  @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade )
 }
 
 model Books {
@@ -63,7 +63,7 @@ model BookGenres {
   bookId    String
   genreId   String
   book      Books     @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  genre     Genres    @relation(fields: [genreId], references: [id])
+  genre     Genres    @relation(fields: [genreId], references: [id], onUpdate: Cascade, onDelete: SetNull )
 
   @@id([genreId, bookId])
 }

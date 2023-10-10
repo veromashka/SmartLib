@@ -1,5 +1,5 @@
 import { PrismaService } from 'src/prisma.service';
-import { Books, Prisma } from '@prisma/client';
+import { Books, Prisma, Users } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { UpdateBookRequestDto } from './dto/request/update-book.dto';
 
@@ -18,7 +18,7 @@ export class BookRepository {
   async findAll(): Promise<Books[]> {
     return await this.prisma.books.findMany();
   }
-  async update(id: string, updateData: UpdateBookRequestDto) {
+  async update(id: string, updateData: Partial<Books>) {
     return await this.prisma.books.update({ where: { id }, data: updateData });
   }
   async delete(where: Prisma.BooksWhereUniqueInput): Promise<Books> {

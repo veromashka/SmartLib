@@ -1,6 +1,7 @@
 import { PrismaService } from 'src/prisma.service';
 import { Users, Prisma } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
+import { UpdateUserDto } from './dto/request/update-user.dto';
 
 @Injectable()
 export class UserRepository {
@@ -18,9 +19,9 @@ export class UserRepository {
     return await this.prisma.users.findMany();
   }
   //TODO updateDTO
-  // async update(id: string, updateData: ) {
-  //   return await this.prisma.books.update({ where: { id }, data: updateData });
-  // }
+  async update(id: string, data: Partial<Users>) {
+    return await this.prisma.users.update({ where: { id }, data });
+  }
   async delete(where: Prisma.UsersWhereUniqueInput): Promise<Users> {
     return await this.prisma.users.delete({ where });
   }
