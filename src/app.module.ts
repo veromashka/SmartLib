@@ -1,4 +1,5 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { LoggerMiddleware } from './logger/logger.middleware';
 import { BooksModule } from './book/book.module';
 import { GenreModule } from './genre/genre.module';
 import { AppController } from './app.controller';
