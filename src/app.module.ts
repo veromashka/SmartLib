@@ -6,9 +6,10 @@ import { AppService } from './app.service';
 import { LoggerMiddleware } from './logger/logger.middleware';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
-  imports: [BooksModule, GenreModule, UserModule, AuthModule],
+  imports: [BooksModule, GenreModule, UserModule, AuthModule, MailModule],
   providers: [AppService],
   controllers: [AppController],
 })

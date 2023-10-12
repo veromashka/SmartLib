@@ -1,7 +1,6 @@
 import { PrismaService } from 'src/prisma.service';
-import { Books, Prisma, Users } from '@prisma/client';
+import { Books, Prisma } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
-import { UpdateBookRequestDto } from './dto/request/update-book.dto';
 
 @Injectable()
 export class BookRepository {

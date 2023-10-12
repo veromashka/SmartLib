@@ -15,4 +15,10 @@ export class CreateUserDto extends UserDto {
 
   @IsNotEmpty()
   password: string;
+
+  @IsOptional()
+  confirmationStatus: boolean;
+
+  @IsOptional()
+  confirmationNumber: number;
 }

@@ -7,6 +7,7 @@ import { AuthService } from './auth.service';
 import { AuthRepository } from './auth.repository';
 import { UserRepository } from '../user/user.repository';
 import { JwtService } from '@nestjs/jwt';
+import { EmailService } from '../mail/mail.service';
 
 @Module({
   providers: [
@@ -14,6 +15,7 @@ import { JwtService } from '@nestjs/jwt';
     AuthRepository,
     UserRepository,
     UserService,
+    EmailService,
     JwtService,
     PrismaService,
   ],

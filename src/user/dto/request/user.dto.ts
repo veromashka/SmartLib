@@ -22,11 +22,17 @@ export class UserDto {
   password: string;
 
   @IsOptional()
-  @IsArray()
-  @IsObject({ each: true })
-  profile?: object[];
+  confirmationStatus: boolean;
 
   @IsOptional()
-  @IsArray()
-  orders?: string[];
+  confirmationNumber: number;
+
+  // @IsOptional()
+  // @IsArray()
+  // @IsObject({ each: true })
+  // profile?: object[];
+  //
+  // @IsOptional()
+  // @IsArray()
+  // orders?: string[];
 }

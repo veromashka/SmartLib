@@ -12,6 +12,8 @@ CREATE TABLE "Users" (
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "confirmationNumber" INTEGER NOT NULL,
+    "confirmationStatus" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Users_pkey" PRIMARY KEY ("id")
 );
@@ -20,6 +22,8 @@ CREATE TABLE "Users" (
 CREATE TABLE "Orders" (
     "id" TEXT NOT NULL,
     "paid" BOOLEAN NOT NULL,
+    "term" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL,
     "userId" TEXT,
     "bookId" TEXT,
 
@@ -31,6 +35,8 @@ CREATE TABLE "Profiles" (
     "id" TEXT NOT NULL,
     "phoneNumber" INTEGER NOT NULL,
     "age" INTEGER NOT NULL,
+    "name" TEXT NOT NULL,
+    "lastName" TEXT NOT NULL,
     "country" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
 
@@ -79,10 +85,10 @@ ALTER TABLE "Orders" ADD CONSTRAINT "Orders_bookId_fkey" FOREIGN KEY ("bookId") 
 ALTER TABLE "Orders" ADD CONSTRAINT "Orders_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Profiles" ADD CONSTRAINT "Profiles_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Profiles" ADD CONSTRAINT "Profiles_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "BookGenres" ADD CONSTRAINT "BookGenres_bookId_fkey" FOREIGN KEY ("bookId") REFERENCES "Books"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "BookGenres" ADD CONSTRAINT "BookGenres_genreId_fkey" FOREIGN KEY ("genreId") REFERENCES "Genres"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "BookGenres" ADD CONSTRAINT "BookGenres_genreId_fkey" FOREIGN KEY ("genreId") REFERENCES "Genres"("id") ON DELETE SET NULL ON UPDATE CASCADE;

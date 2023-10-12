@@ -9,14 +9,17 @@ datasource db {
 }
 
 model Users {
-  id        String    @id @default(uuid())
-  login     String
-  role      Roles     @default(USER)
-  email     String    @unique
-  password  String
-  createdAt DateTime  @default(now())
-  orders    Orders[]
-  profile   Profiles?
+  id                 String    @id @default(uuid())
+  login              String
+  role               Roles     @default(USER)
+  email              String    @unique
+  password           String
+  createdAt          DateTime  @default(now())
+  confirmationNumber Int       @default(0)
+  expireDate         String?
+  confirmationStatus Boolean   @default(false)
+  orders             Orders[]
+  profile            Profiles?
 }
 
 model Orders {
@@ -38,7 +41,7 @@ model Profiles {
   lastName    String
   country     String
   userId      String @unique
-  user        Users  @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade )
+  user        Users  @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Books {
@@ -63,7 +66,7 @@ model BookGenres {
   bookId    String
   genreId   String
   book      Books     @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  genre     Genres    @relation(fields: [genreId], references: [id], onUpdate: Cascade, onDelete: SetNull )
+  genre     Genres    @relation(fields: [genreId], references: [id], onUpdate: Cascade, onDelete: SetNull)
 
   @@id([genreId, bookId])
 }
