@@ -39,8 +39,6 @@ export class AuthService {
 
       const newExpTime = await newExpDate(durationString);
 
-      console.log(newExpTime);
-
       const newUser = await this.authRepository.signUp({
         login,
         role,
@@ -51,7 +49,7 @@ export class AuthService {
         password: newPassword,
       });
 
-      // await this.mailService.sendEmail(email, token);
+      await this.mailService.sendEmail(email, token);
 
       return newUser;
     } catch (e) {
