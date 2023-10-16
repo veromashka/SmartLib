@@ -1,10 +1,10 @@
 import * as dayjs from 'dayjs';
 
 // Create a Day.js instance representing the current date
-const currentDate = dayjs();
+export const currentDate = dayjs();
 
 // Define the string you want to add (e.g., '1h')
-export const durationString = '2h';
+export const durationString = '1h';
 
 export async function newExpDate(durationString): Promise<Date> {
   const match = durationString.match(/(\d+)([smhdwMy]|ms)/);
@@ -32,7 +32,6 @@ export async function newExpDate(durationString): Promise<Date> {
       console.error('Invalid duration unit.');
     }
 
-    // console.log(newDate.toLocaleTimeString());
     return newDate.format('YYYY-MM-DD HH:mm:ss'); // Return the formatted date as a locale-specific time string
   } else {
     console.error('Invalid duration format.');

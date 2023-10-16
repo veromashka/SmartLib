@@ -18,7 +18,7 @@ model Users {
   password           String
   createdAt          DateTime  @default(now())
   confirmationNumber Int       @default(0)
-  expireDate         String?
+  expireDate         DateTime?
   confirmationStatus Boolean   @default(false)
   orders             Orders[]
   profile            Profiles?
