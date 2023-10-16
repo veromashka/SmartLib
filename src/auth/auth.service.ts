@@ -11,11 +11,18 @@ import { Users } from '@prisma/client';
 import { CreateUserDto } from '../user/dto/request/create-user.dto';
 import { AuthRepository } from './auth.repository';
 import { EmailService } from '../mail/mail.service';
-import { durationString, newExpDate } from '../shared/util/constants';
+import {
+  currentDate,
+  durationString,
+  newExpDate,
+} from '../shared/util/constants';
+import { SecretNumberDto } from './dto/request/secret-number.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
+    private configService: ConfigService,
     private userService: UserService,
     private mailService: EmailService,
     private authRepository: AuthRepository,
@@ -26,16 +33,14 @@ export class AuthService {
     try {
       const { login, role, email, confirmationStatus, password } = data;
 
-      // const user = await this.isEmailExist(data);
-      //
-      // if (user) {
-      //   console.log('erroe');
-      //   const message = 'User already exists';
-      //   throw new BadRequestException(message);
-      // }
-
-      const newPassword = await this.hashPassword(password);
+      const user = await this.userService.findByEmail(email);
       const token = await this.generateSecretNumber();
+
+      const expireResult = await this.checkExpireDate(user, token);
+      if (expireResult) {
+        return expireResult;
+      }
+      const newPassword = await this.hashPassword(password);
 
       const newExpTime = await newExpDate(durationString);
 
@@ -45,7 +50,7 @@ export class AuthService {
         email,
         confirmationNumber: token,
         confirmationStatus,
-        expireDate: newExpTime.toString(),
+        expireDate: new Date(newExpTime).toISOString(),
         password: newPassword,
       });
 
@@ -53,12 +58,29 @@ export class AuthService {
 
       return newUser;
     } catch (e) {
-      console.log(e);
-      throw new BadRequestException('Something bad happened');
+      throw new BadRequestException(e.message);
     }
   }
+  async confirmEmail(id: string, data: SecretNumberDto): Promise<Users> {
+    try {
+      const user = await this.userService.findById(id);
 
-  // async checkIsEmailConfirmed(secretNumber: number): Promise {}
+      if (user.confirmationStatus) {
+        throw new BadRequestException('This email has already been confirmed');
+      }
+
+      if (user.confirmationNumber == data.secretNumber) {
+        return await this.userService.update(user.id, {
+          ...user,
+          confirmationStatus: true,
+        });
+      } else {
+        throw new BadRequestException('Secret number is incorrect');
+      }
+    } catch (error) {
+      throw new BadRequestException();
+    }
+  }
 
   async logIn(data) {
     try {
@@ -67,16 +89,44 @@ export class AuthService {
       if (!user) {
         throw new NotFoundException('User does not exist');
       }
+      const token = await this.generateSecretNumber();
+      const expireResult = await this.checkExpireDate(user, token);
+      if (expireResult) {
+        return expireResult;
+      }
+
       await this.comparePassword(data.password, user.password);
 
-      return {
-        access_token: await this.signToken(user),
-      };
+      return { access_token: await this.signToken(user) };
     } catch (error) {
       throw error;
     }
   }
 
+  async checkExpireDate(user: Users, token) {
+    try {
+      if (user && !user.confirmationStatus) {
+        const userExpireDate = new Date(user.expireDate).getTime();
+        const currDate = new Date(
+          currentDate.format('YYYY-MM-DD HH:mm:ss'),
+        ).getTime();
+        if (userExpireDate <= currDate) {
+          await this.mailService.sendEmail(user.email, token);
+          return {
+            message: 'Email with secret code was sent again',
+            userId: user.id,
+          };
+        } else {
+          return {
+            message: 'Please check your post',
+            userId: user.id,
+          };
+        }
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
   async addHours(date: Date, hours: number): Promise<Date> {
     date.setHours(date.getHours() + hours);
 
@@ -93,12 +143,11 @@ export class AuthService {
       sub: user.email,
       id: user.id,
     };
-    return await this.jwtService.sign(payload, { secret: 'SECRET' });
+    const jwtSecret = this.configService.get<string>('JWT_SECRET');
+
+    return this.jwtService.sign(payload, { secret: jwtSecret });
   }
-  async isEmailExist(data) {
-    const user = await this.userService.findByEmail(data.email);
-    return !!user;
-  }
+
   async hashPassword(password: string) {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -111,7 +160,7 @@ export class AuthService {
     const result = await bcrypt.compare(password, hashedPassword);
 
     if (!result) {
-      const messsage = 'Password is incorrect';
+      const messsage = 'Password or email is incorrect';
       throw new BadRequestException(messsage);
     }
     return result;

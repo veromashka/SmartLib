@@ -1,4 +1,5 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { BooksModule } from './book/book.module';
 import { GenreModule } from './genre/genre.module';
 import { AppController } from './app.controller';
@@ -9,7 +10,14 @@ import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
 
 @Module({
-  imports: [BooksModule, GenreModule, UserModule, AuthModule, MailModule],
+  imports: [
+    ConfigModule.forRoot(),
+    BooksModule,
+    GenreModule,
+    UserModule,
+    AuthModule,
+    MailModule,
+  ],
   providers: [AppService],
   controllers: [AppController],
 })
