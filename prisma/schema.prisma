@@ -1,44 +1,49 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fieldReference"]
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-  previewFeatures = ["fieldReference"]
 
-}
 
 model Users {
-  id        String     @id @default(uuid())
-  login     String
-  role      Roles      @default(USER)
-  email     String     @unique
-  password  String
-  createdAt DateTime   @default(now())
-  profile   Profiles[]
-  orders    Orders[]
+  id                 String    @id @default(uuid())
+  login              String
+  role               Roles     @default(USER)
+  email              String    @unique
+  password           String
+  createdAt          DateTime  @default(now())
+  confirmationNumber Int       @default(0)
+  expireDate         DateTime?
+  confirmationStatus Boolean   @default(false)
+  orders             Orders[]
+  profile            Profiles?
 }
 
 model Orders {
-  id      String  @id @default(uuid())
-  paid    Boolean
-  user    Users?  @relation(fields: [userId], references: [id])
-  userId  String?
-  book   Books?  @relation(fields: [bookId], references: [id])
-  bookId String?
+  id        String   @id @default(uuid())
+  paid      Boolean
+  term      Int
+  createdAt DateTime
+  userId    String?
+  bookId    String?
+  book      Books?   @relation(fields: [bookId], references: [id], onUpdate: Cascade)
+  user      Users?   @relation(fields: [userId], references: [id], onUpdate: Cascade)
 }
 
 model Profiles {
   id          String @id @default(uuid())
   phoneNumber Int
   age         Int
+  name        String
+  lastName    String
   country     String
-  user        Users  @relation(fields: [userId], references: [id])
   userId      String @unique
+  user        Users  @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Books {
@@ -60,10 +65,10 @@ model Genres {
 model BookGenres {
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
-  book      Books     @relation(fields: [bookId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  genre     Genres    @relation(fields: [genreId], references: [id])
   bookId    String
   genreId   String
+  book      Books     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  genre     Genres    @relation(fields: [genreId], references: [id], onUpdate: Cascade, onDelete: SetNull)
 
   @@id([genreId, bookId])
 }

@@ -30,7 +30,6 @@ export class BookService {
         author,
         releaseYear,
         category,
-        // orders: [],
         genre: {
           create,
         },
