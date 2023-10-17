@@ -13,7 +13,10 @@ import { AuthRepository } from './auth.repository';
 import { EmailService } from '../mail/mail.service';
 import {
   currentDate,
+  dayFormat,
   durationString,
+  maxNumber,
+  minNumber,
   newExpDate,
 } from '../shared/util/constants';
 import { SecretNumberDto } from './dto/request/secret-number.dto';
@@ -97,9 +100,10 @@ export class AuthService {
 
       await this.comparePassword(data.password, user.password);
 
-      return { access_token: await this.signToken(user) };
+      const accessToken = await this.signToken(user);
+      return { access_token: accessToken };
     } catch (error) {
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -107,9 +111,7 @@ export class AuthService {
     try {
       if (user && !user.confirmationStatus) {
         const userExpireDate = new Date(user.expireDate).getTime();
-        const currDate = new Date(
-          currentDate.format('YYYY-MM-DD HH:mm:ss'),
-        ).getTime();
+        const currDate = new Date(currentDate.format(dayFormat)).getTime();
         if (userExpireDate <= currDate) {
           await this.mailService.sendEmail(user.email, token);
           return {
@@ -127,15 +129,10 @@ export class AuthService {
       throw new InternalServerErrorException(error);
     }
   }
-  async addHours(date: Date, hours: number): Promise<Date> {
-    date.setHours(date.getHours() + hours);
-
-    return date;
-  }
   async generateSecretNumber(): Promise<number> {
-    const minm = 10000;
-    const maxm = 99999;
-    const secretNumber = Math.floor(Math.random() * (maxm - minm + 1) + minm);
+    const secretNumber = Math.floor(
+      Math.random() * (maxNumber - minNumber + 1) + minNumber,
+    );
     return secretNumber;
   }
   async signToken(user: Users): Promise<string> {
@@ -160,8 +157,7 @@ export class AuthService {
     const result = await bcrypt.compare(password, hashedPassword);
 
     if (!result) {
-      const messsage = 'Password or email is incorrect';
-      throw new BadRequestException(messsage);
+      throw new BadRequestException('Password or email is incorrect');
     }
     return result;
   }

@@ -33,7 +33,7 @@ export class AuthController {
     @Param('id') id: string,
     @Body() data: SecretNumberDto,
   ): Promise<Users> {
-    return await this.authService.confirmEmail(id, { ...data });
+    return await this.authService.confirmEmail(id, data);
   }
 
   @Post('login')
