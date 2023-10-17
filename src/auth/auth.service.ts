@@ -13,25 +13,25 @@ import { AuthRepository } from './auth.repository';
 import { EmailService } from '../mail/mail.service';
 import {
   currentDate,
+  dayFormat,
   durationString,
+  maxNumber,
+  minNumber,
   newExpDate,
 } from '../shared/util/constants';
-import { ConfirmDto } from './dto/request/confirm.dto';
 import { SecretNumberDto } from './dto/request/secret-number.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
+    private configService: ConfigService,
     private userService: UserService,
     private mailService: EmailService,
     private authRepository: AuthRepository,
     private jwtService: JwtService,
   ) {}
 
-  //TODO confirm password
-  //Variant 1 user is registered but email is not confirmed> resend confirmation number to email
-  //Variant 2 user got secretNumber which is expired> resend confirmation number to email
-  //Variant 3 user is registered with confirmed email> Login please
   async signUp(data: CreateUserDto) {
     try {
       const { login, role, email, confirmationStatus, password } = data;
@@ -39,19 +39,9 @@ export class AuthService {
       const user = await this.userService.findByEmail(email);
       const token = await this.generateSecretNumber();
 
-      if (user && !user.confirmationStatus && user.confirmationNumber) {
-        const dbDate = new Date(user.expireDate).getTime();
-        const currDate = new Date(
-          currentDate.format('YYYY-MM-DD HH:mm:ss'),
-        ).getTime();
-        if (dbDate <= currDate) {
-          console.log('Email with secret code was sent again');
-          await this.mailService.sendEmail(user.email, token);
-          //Redirect to confirm page with user id in params
-        } else {
-          console.log('Please check your post');
-          //Redirect to confirm page with user id in params
-        }
+      const expireResult = await this.checkExpireDate(user, token);
+      if (expireResult) {
+        return expireResult;
       }
       const newPassword = await this.hashPassword(password);
 
@@ -71,8 +61,7 @@ export class AuthService {
 
       return newUser;
     } catch (e) {
-      console.log(e);
-      throw new BadRequestException('Something bad happened');
+      throw new BadRequestException(e.message);
     }
   }
   async confirmEmail(id: string, data: SecretNumberDto): Promise<Users> {
@@ -81,7 +70,6 @@ export class AuthService {
 
       if (user.confirmationStatus) {
         throw new BadRequestException('This email has already been confirmed');
-      } else {
       }
 
       if (user.confirmationNumber == data.secretNumber) {
@@ -92,13 +80,10 @@ export class AuthService {
       } else {
         throw new BadRequestException('Secret number is incorrect');
       }
-      return user;
     } catch (error) {
       throw new BadRequestException();
     }
   }
-
-  // async checkIsEmailConfirmed(secretNumber: number): Promise {}
 
   async logIn(data) {
     try {
@@ -108,37 +93,46 @@ export class AuthService {
         throw new NotFoundException('User does not exist');
       }
       const token = await this.generateSecretNumber();
-      if (!user.confirmationStatus) {
-        const dbDate = new Date(user.expireDate).getTime();
-        const currDate = new Date(
-          currentDate.format('YYYY-MM-DD HH:mm:ss'),
-        ).getTime();
-        if (dbDate <= currDate) {
-          console.log('Email with secret code was sent again');
-          await this.mailService.sendEmail(user.email, token);
-          //Redirect to confirm page with user id in params
-        } else {
-          console.log('Please check your post');
-          //Redirect to confirm page with user id in params
-        }
+      const expireResult = await this.checkExpireDate(user, token);
+      if (expireResult) {
+        return expireResult;
       }
+
       await this.comparePassword(data.password, user.password);
 
-      return { access_token: await this.signToken(user) };
+      const accessToken = await this.signToken(user);
+      return { access_token: accessToken };
     } catch (error) {
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
-  async addHours(date: Date, hours: number): Promise<Date> {
-    date.setHours(date.getHours() + hours);
-
-    return date;
+  async checkExpireDate(user: Users, token) {
+    try {
+      if (user && !user.confirmationStatus) {
+        const userExpireDate = new Date(user.expireDate).getTime();
+        const currDate = new Date(currentDate.format(dayFormat)).getTime();
+        if (userExpireDate <= currDate) {
+          await this.mailService.sendEmail(user.email, token);
+          return {
+            message: 'Email with secret code was sent again',
+            userId: user.id,
+          };
+        } else {
+          return {
+            message: 'Please check your post',
+            userId: user.id,
+          };
+        }
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
   async generateSecretNumber(): Promise<number> {
-    const minm = 10000;
-    const maxm = 99999;
-    const secretNumber = Math.floor(Math.random() * (maxm - minm + 1) + minm);
+    const secretNumber = Math.floor(
+      Math.random() * (maxNumber - minNumber + 1) + minNumber,
+    );
     return secretNumber;
   }
   async signToken(user: Users): Promise<string> {
@@ -146,12 +140,11 @@ export class AuthService {
       sub: user.email,
       id: user.id,
     };
-    return await this.jwtService.sign(payload, { secret: 'SECRET' });
+    const jwtSecret = this.configService.get<string>('JWT_SECRET');
+
+    return this.jwtService.sign(payload, { secret: jwtSecret });
   }
-  async isEmailExist(data) {
-    const user = await this.userService.findByEmail(data.email);
-    return !!user;
-  }
+
   async hashPassword(password: string) {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -164,8 +157,7 @@ export class AuthService {
     const result = await bcrypt.compare(password, hashedPassword);
 
     if (!result) {
-      const messsage = 'Password or email is incorrect';
-      throw new BadRequestException(messsage);
+      throw new BadRequestException('Password or email is incorrect');
     }
     return result;
   }

@@ -24,7 +24,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
-  async signup(@Body() data: CreateUserDto): Promise<Users> {
+  async signup(@Body() data: CreateUserDto): Promise<Users | object> {
     return await this.authService.signUp(data);
   }
 
@@ -33,12 +33,14 @@ export class AuthController {
     @Param('id') id: string,
     @Body() data: SecretNumberDto,
   ): Promise<Users> {
-    return await this.authService.confirmEmail(id, { ...data });
+    return await this.authService.confirmEmail(id, data);
   }
 
   @Post('login')
   @UseInterceptors(TokenInterceptor)
-  async login(@Body() data: AuthRequestDto): Promise<{ access_token: string }> {
+  async login(
+    @Body() data: AuthRequestDto,
+  ): Promise<{ access_token: string } | object> {
     return await this.authService.logIn(data);
   }
 }
