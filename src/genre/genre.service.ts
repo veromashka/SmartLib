@@ -1,4 +1,4 @@
-import { Genres, Prisma } from '@prisma/client';
+import { Genres } from '@prisma/client';
 import { GenreRepository } from './genre.repository';
 import { CreateGenreRequestDto } from './dto/request/create-genre.dto';
 import { Logger, Injectable } from '@nestjs/common';
@@ -12,7 +12,7 @@ export class GenreService {
   async createGenre(data: CreateGenreRequestDto): Promise<Genres> {
     return this.genreRepository.create({ ...data });
   }
-  async getById(id: Prisma.GenresWhereUniqueInput) {
+  async getById(id: string) {
     return await this.genreRepository.getById(id);
   }
   async getAll() {

@@ -1,7 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-
 import { UserRepository } from './user.repository';
-
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { Users } from '@prisma/client';
 
@@ -9,9 +7,13 @@ import { Users } from '@prisma/client';
 export class UserService {
   constructor(private userRepository: UserRepository) {}
 
+  //TODO: return type
+
   async findByEmail(email: string) {
     return await this.userRepository.findOne(email);
   }
+
+  //TODO: return type
 
   async findById(id: string) {
     return await this.userRepository.findOneById(id);

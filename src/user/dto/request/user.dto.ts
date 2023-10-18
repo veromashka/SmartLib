@@ -1,18 +1,17 @@
 import {
   IsString,
   IsEmail,
-  IsEnum,
   IsOptional,
   IsArray,
   IsObject,
   IsBoolean,
 } from 'class-validator';
-import { Roles } from 'src/common/enums';
 
 export class UserDto {
   @IsString()
   login: string;
 
+  //TODO: remove
   // @IsEnum(Roles)
   // role: Roles;
 

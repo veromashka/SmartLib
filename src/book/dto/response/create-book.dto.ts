@@ -1,20 +1,17 @@
-import {  IsInt, IsNotEmpty,  IsString, IsUUID} from 'class-validator';
-import { isNullOrUndefined } from 'util';
+import { IsInt, IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
 export class CreateBookResponseDto {
   @IsUUID()
-  id: string
-
-
-  @IsNotEmpty()
-  @IsString()
-  title: string
+  id: string;
 
   @IsNotEmpty()
   @IsString()
-  author: string
+  title: string;
+
+  @IsNotEmpty()
+  @IsString()
+  author: string;
 
   @IsInt()
   releaseYear: number;
-
 }

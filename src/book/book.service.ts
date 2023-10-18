@@ -13,7 +13,7 @@ export class BookService {
 
   async create(data: CreateBookRequestDto) {
     try {
-      const { title, author, releaseYear, category, genres } = data;
+      const { title, author, releaseYear, category, genres, price } = data;
 
       const create = genres.map((genre) => {
         return {
@@ -24,8 +24,9 @@ export class BookService {
           },
         };
       });
-      // await this.logger.log('POST');
+
       return await this.bookRepository.create({
+        price,
         title,
         author,
         releaseYear,
@@ -36,23 +37,22 @@ export class BookService {
       });
     } catch (e) {
       // this.logger.error(e);
-      throw new BadRequestException('Something bad happened', {
-        cause: new Error(),
-        description: 'Some error description',
-      });
+      throw new BadRequestException('Something bad happened');
     }
   }
 
+  //TODO: return type
   async getAll() {
     // this.logger.log('GET ALL');
     return await this.bookRepository.findAll();
   }
 
-  //TODO
+  //TODO: return type
   async getById(id: string) {
     return await this.bookRepository.findOne({ id });
   }
 
+  //TODO: return type
   async update(id: string, data: UpdateBookRequestDto) {
     try {
       return await this.bookRepository.update(id, data);
@@ -62,9 +62,11 @@ export class BookService {
       });
     }
   }
-  async deleteById(id: string) {
+
+  //TODO: return type
+  async deleteById(id: string): Promise<void> {
     try {
-      return await this.bookRepository.delete({ id: id });
+      await this.bookRepository.delete({ id: id });
     } catch (e) {
       throw new InternalServerErrorException();
     }

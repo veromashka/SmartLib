@@ -4,7 +4,7 @@ import {
   IsString,
   IsArray,
   ArrayMinSize,
-  IsObject,
+  IsNumber,
 } from 'class-validator';
 import { Categories } from 'src/common/enums';
 
@@ -18,12 +18,11 @@ export class BookRequestDto {
   @IsInt()
   releaseYear: number;
 
-  //
+  @IsNumber()
+  price: number;
+
   @IsEnum(Categories)
   category: Categories;
-  @IsArray()
-  @IsObject({ each: true })
-  orders: object[];
 
   @IsArray()
   @IsString({ each: true })

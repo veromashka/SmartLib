@@ -37,33 +37,33 @@ export class AuthService {
       const { login, role, email, confirmationStatus, password } = data;
 
       const user = await this.userService.findByEmail(email);
-      const token = await this.generateSecretNumber();
-
-      const expireResult = await this.checkExpireDate(user, token);
-      if (expireResult) {
-        return expireResult;
+      const confirmationNumber = await this.generateSecretNumber();
+      if (user && !user.confirmationStatus) {
+        //TODO: add user update
+        return await this.checkExpireDate(user, confirmationNumber);
       }
-      const newPassword = await this.hashPassword(password);
+      const hashedPassword = await this.hashPassword(password);
 
       const newExpTime = await newExpDate(durationString);
 
-      const newUser = await this.authRepository.signUp({
+      const createdUser = await this.authRepository.signUp({
         login,
         role,
         email,
-        confirmationNumber: token,
+        confirmationNumber,
         confirmationStatus,
         expireDate: new Date(newExpTime).toISOString(),
-        password: newPassword,
+        password: hashedPassword,
       });
 
-      await this.mailService.sendEmail(email, token);
+      await this.mailService.sendEmail(email, confirmationNumber);
 
-      return newUser;
+      return createdUser;
     } catch (e) {
       throw new BadRequestException(e.message);
     }
   }
+
   async confirmEmail(id: string, data: SecretNumberDto): Promise<Users> {
     try {
       const user = await this.userService.findById(id);
@@ -72,69 +72,59 @@ export class AuthService {
         throw new BadRequestException('This email has already been confirmed');
       }
 
-      if (user.confirmationNumber == data.secretNumber) {
-        return await this.userService.update(user.id, {
-          ...user,
-          confirmationStatus: true,
-        });
-      } else {
+      if (user.confirmationNumber !== data.secretNumber) {
         throw new BadRequestException('Secret number is incorrect');
       }
+
+      return await this.userService.update(user.id, {
+        ...user,
+        confirmationStatus: true,
+      });
     } catch (error) {
-      throw new BadRequestException();
+      throw new BadRequestException(error.message);
     }
   }
 
+  //TODO: Add return type and data type
   async logIn(data) {
     try {
       const user = await this.userService.findByEmail(data.email);
 
-      if (!user) {
-        throw new NotFoundException('User does not exist');
-      }
-      const token = await this.generateSecretNumber();
-      const expireResult = await this.checkExpireDate(user, token);
-      if (expireResult) {
-        return expireResult;
+      if (!user || !user.confirmationStatus) {
+        throw new NotFoundException('Wrong email or password');
       }
 
       await this.comparePassword(data.password, user.password);
 
       const accessToken = await this.signToken(user);
+
+      //TODO: Rename
       return { access_token: accessToken };
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
   }
 
+  //TODO: Add return type and args type
   async checkExpireDate(user: Users, token) {
     try {
-      if (user && !user.confirmationStatus) {
-        const userExpireDate = new Date(user.expireDate).getTime();
-        const currDate = new Date(currentDate.format(dayFormat)).getTime();
-        if (userExpireDate <= currDate) {
-          await this.mailService.sendEmail(user.email, token);
-          return {
-            message: 'Email with secret code was sent again',
-            userId: user.id,
-          };
-        } else {
-          return {
-            message: 'Please check your post',
-            userId: user.id,
-          };
-        }
+      const userExpireDate = new Date(user.expireDate).getTime();
+      const currDate = new Date(currentDate.format(dayFormat)).getTime();
+      if (userExpireDate <= currDate) {
+        await this.mailService.sendEmail(user.email, token);
       }
+      return {
+        message: 'Email with secret code was sent ',
+      };
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
   }
+
   async generateSecretNumber(): Promise<number> {
-    const secretNumber = Math.floor(
-      Math.random() * (maxNumber - minNumber + 1) + minNumber,
-    );
-    return secretNumber;
+    return Math.floor(Math.random() * (maxNumber - minNumber) + minNumber);
   }
+
   async signToken(user: Users): Promise<string> {
     const payload = {
       sub: user.email,
@@ -145,11 +135,12 @@ export class AuthService {
     return this.jwtService.sign(payload, { secret: jwtSecret });
   }
 
+  //TODO: add return type
   async hashPassword(password: string) {
     const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(password, salt);
-    return hashedPassword;
+    return await bcrypt.hash(password, salt);
   }
+
   async comparePassword(
     password: string,
     hashedPassword: string,

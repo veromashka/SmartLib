@@ -6,6 +6,7 @@ export class CreateUserDto extends UserDto {
   @IsNotEmpty()
   login: string;
 
+  //TODO: remove
   @IsOptional()
   @IsEnum(Roles)
   role: Roles;
@@ -16,6 +17,7 @@ export class CreateUserDto extends UserDto {
   @IsNotEmpty()
   password: string;
 
+  //TODO: remove
   @IsOptional()
   confirmationStatus: boolean;
 
