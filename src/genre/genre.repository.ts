@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateGenreRequestDto } from './dto/request/create-genre.dto';
+import { CreateGenreRequestDto } from './dto/request';
 import { PrismaService } from 'src/prisma.service';
 import { Genres } from '@prisma/client';
 

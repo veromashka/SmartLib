@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npm run precommit && npx pretty-quick --stagednpm test
+npm run precommit && npx pretty-quick --staged && npm run lint

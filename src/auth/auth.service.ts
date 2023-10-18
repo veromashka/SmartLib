@@ -11,15 +11,9 @@ import { Users } from '@prisma/client';
 import { CreateUserDto } from '../user/dto/request/create-user.dto';
 import { AuthRepository } from './auth.repository';
 import { EmailService } from '../mail/mail.service';
-import {
-  currentDate,
-  dayFormat,
-  durationString,
-  maxNumber,
-  minNumber,
-  newExpDate,
-} from '../shared/util/constants';
-import { SecretNumberDto } from './dto/request/secret-number.dto';
+import constants from '../shared/util/constants';
+import { newExpDate } from '../shared/util/date';
+import { SecretNumberDto } from './dto/request';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -29,7 +23,7 @@ export class AuthService {
     private userService: UserService,
     private mailService: EmailService,
     private authRepository: AuthRepository,
-    private jwtService: JwtService,
+    private jwtService: JwtService
   ) {}
 
   async signUp(data: CreateUserDto) {
@@ -44,7 +38,7 @@ export class AuthService {
       }
       const hashedPassword = await this.hashPassword(password);
 
-      const newExpTime = await newExpDate(durationString);
+      const newExpTime = await newExpDate(constants.durationString);
 
       const createdUser = await this.authRepository.signUp({
         login,
@@ -109,7 +103,9 @@ export class AuthService {
   async checkExpireDate(user: Users, token) {
     try {
       const userExpireDate = new Date(user.expireDate).getTime();
-      const currDate = new Date(currentDate.format(dayFormat)).getTime();
+      const currDate = new Date(
+        constants.currentDate.format(constants.dayFormat)
+      ).getTime();
       if (userExpireDate <= currDate) {
         await this.mailService.sendEmail(user.email, token);
       }
@@ -122,7 +118,10 @@ export class AuthService {
   }
 
   async generateSecretNumber(): Promise<number> {
-    return Math.floor(Math.random() * (maxNumber - minNumber) + minNumber);
+    return Math.floor(
+      Math.random() * (constants.maxNumber - constants.minNumber) +
+        constants.minNumber
+    );
   }
 
   async signToken(user: Users): Promise<string> {
@@ -143,7 +142,7 @@ export class AuthService {
 
   async comparePassword(
     password: string,
-    hashedPassword: string,
+    hashedPassword: string
   ): Promise<boolean> {
     const result = await bcrypt.compare(password, hashedPassword);
 

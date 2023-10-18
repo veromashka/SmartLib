@@ -2,21 +2,22 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/request/create-order';
 import { OrderRepository } from './order.repository';
 import { BookService } from '../book/book.service';
-import { Users } from '@prisma/client';
+import { Orders, Users } from '@prisma/client';
+import { connect } from 'rxjs';
 
 @Injectable()
 export class OrderService {
   constructor(
     private orderRepository: OrderRepository,
-    private bookService: BookService,
+    private bookService: BookService
   ) {}
 
-  async createNew(data: CreateOrderDto, user: Users) {
+  async createNew(data: CreateOrderDto, user: Users): Promise<Orders> {
     const { book, term, paid } = data;
-
+    //TODO to fix
     const create = book.map((item) => {
       return {
-        books: {
+        book: {
           connect: {
             id: item,
           },
@@ -36,18 +37,14 @@ export class OrderService {
     });
   }
 
-  //TODO: return Type
-  async getAll() {
-    // this.logger.log('GET ALL');
+  async getAll(): Promise<Orders[]> {
     return await this.orderRepository.findAll();
   }
 
-  //TODO: return Type
-  async getById(id: string) {
+  async getById(id: string): Promise<Orders> {
     return await this.orderRepository.findOne({ id });
   }
 
-  //TODO: return Type
   async deleteById(id: string) {
     try {
       return await this.orderRepository.delete({ id: id });

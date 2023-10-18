@@ -1,6 +1,6 @@
 import { Genres } from '@prisma/client';
 import { GenreRepository } from './genre.repository';
-import { CreateGenreRequestDto } from './dto/request/create-genre.dto';
+import { CreateGenreRequestDto } from './dto/request';
 import { Logger, Injectable } from '@nestjs/common';
 
 @Injectable()

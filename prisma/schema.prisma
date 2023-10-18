@@ -27,7 +27,7 @@ model Orders {
   paid      Boolean
   term      Int
   createdAt DateTime @default(now())
-  books     Books[]
+  books     BooksOrder[]
   userId    String
   user      Users   @relation(fields: [userId], references: [id])
 }
@@ -51,11 +51,17 @@ model Books {
   releaseYear Int
   category    Categories   @default(FOR_CHILDREN)
   genre       BookGenres[]
-  orderId     String
-  order       Orders   @relation(fields: [orderId], references: [id], onUpdate: Cascade)
+  orders      BooksOrder[]
 }
-model OrderBooks{
+model BooksOrder{
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  bookId    String
+  orderId   String
+  book      Books     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  order     Orders    @relation(fields: [orderId], references: [id], onUpdate: Cascade, onDelete: SetNull)
 
+  @@id([orderId, bookId])
 }
 
 model Genres {

@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
 
-const
+const subject = 'Welcome to Nice App! Confirm your Email';
 @Injectable()
 export class EmailService {
   private transporter: nodemailer.Transporter;
@@ -38,7 +38,7 @@ export class EmailService {
       from: 'grigorivveronika@gmail.com',
       to: email,
       //TODO: move to const
-      subject: 'Welcome to Nice App! Confirm your Email',
+      subject,
       html: output,
     };
 
