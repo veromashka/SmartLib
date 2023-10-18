@@ -11,6 +11,7 @@ export class UpdateUserDto extends UserDto {
   @IsOptional()
   password: string;
 
+  //TODO: remove
   @IsOptional()
   confirmationStatus: boolean;
 }

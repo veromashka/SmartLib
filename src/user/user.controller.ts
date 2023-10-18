@@ -1,15 +1,6 @@
-import {
-  Controller,
-  Post,
-  Body,
-  UseFilters,
-  Patch,
-  Param,
-} from '@nestjs/common';
+import { Controller, Body, UseFilters, Patch, Param } from '@nestjs/common';
 import { HttpExceptionFilter } from '../http-exception.filter';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/request/create-user.dto';
-import { Users } from '@prisma/client';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 
 @Controller('user')

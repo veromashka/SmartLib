@@ -16,7 +16,6 @@ import { TokenInterceptor } from '../shared/interceptor/token.interceptor';
 import { CreateUserDto } from '../user/dto/request/create-user.dto';
 import { Users } from '@prisma/client';
 import { SecretNumberDto } from './dto/request/secret-number.dto';
-import { ConfirmDto } from './dto/request/confirm.dto';
 
 @Controller('auth')
 @UseFilters(new HttpExceptionFilter())
@@ -40,6 +39,7 @@ export class AuthController {
   @UseInterceptors(TokenInterceptor)
   async login(
     @Body() data: AuthRequestDto,
+    //TODO: type
   ): Promise<{ access_token: string } | object> {
     return await this.authService.logIn(data);
   }

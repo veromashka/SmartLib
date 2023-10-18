@@ -28,7 +28,7 @@ export class BookController {
   async findAll(): Promise<BookModel[]> {
     return this.bookService.getAll();
   }
-  // //TODO: GET by ID
+
   @Get(':id')
   async findById(@Param('id') id: string): Promise<BookModel> {
     return this.bookService.getById(id);

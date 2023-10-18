@@ -8,8 +8,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
 model Users {
   id                 String    @id @default(uuid())
   login              String
@@ -28,11 +26,10 @@ model Orders {
   id        String   @id @default(uuid())
   paid      Boolean
   term      Int
-  createdAt DateTime
-  userId    String?
-  bookId    String?
-  book      Books?   @relation(fields: [bookId], references: [id], onUpdate: Cascade)
-  user      Users?   @relation(fields: [userId], references: [id], onUpdate: Cascade)
+  createdAt DateTime @default(now())
+  books     Books[]
+  userId    String
+  user      Users   @relation(fields: [userId], references: [id])
 }
 
 model Profiles {
@@ -49,11 +46,16 @@ model Profiles {
 model Books {
   id          String       @id @default(uuid())
   title       String
+  price       Int
   author      String
   releaseYear Int
   category    Categories   @default(FOR_CHILDREN)
   genre       BookGenres[]
-  orders      Orders[]
+  orderId     String
+  order       Orders   @relation(fields: [orderId], references: [id], onUpdate: Cascade)
+}
+model OrderBooks{
+
 }
 
 model Genres {

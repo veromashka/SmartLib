@@ -1,4 +1,4 @@
-import { IsOptional} from 'class-validator';
+import { IsOptional } from 'class-validator';
 import { Categories } from 'src/common/enums';
 
 export class UpdateBookRequestDto {
