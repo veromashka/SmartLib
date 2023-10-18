@@ -23,7 +23,7 @@ export class EmailService {
     });
   }
 
-  async sendEmail(email: string, token: number) {
+  async sendEmail(email: string, token: number): Promise<boolean> {
     const output = `
       <h1>Email Confirmation</h1>
       <p>Dear User,</p>

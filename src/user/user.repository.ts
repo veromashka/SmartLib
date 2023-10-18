@@ -18,8 +18,7 @@ export class UserRepository {
     return await this.prisma.users.findMany();
   }
 
-  //TODO: return type
-  async update(id: string, data: Partial<Users>) {
+  async update(id: string, data: Partial<Users>): Promise<Users> {
     return await this.prisma.users.update({ where: { id }, data });
   }
 

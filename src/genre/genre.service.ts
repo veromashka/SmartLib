@@ -12,10 +12,10 @@ export class GenreService {
   async createGenre(data: CreateGenreRequestDto): Promise<Genres> {
     return this.genreRepository.create({ ...data });
   }
-  async getById(id: string) {
+  async getById(id: string): Promise<Genres> {
     return await this.genreRepository.getById(id);
   }
-  async getAll() {
+  async getAll(): Promise<Genres[]> {
     return await this.genreRepository.getAll();
   }
   //TODO

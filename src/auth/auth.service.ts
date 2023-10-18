@@ -26,7 +26,7 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  async signUp(data: CreateUserDto) {
+  async signUp(data: CreateUserDto): Promise<Users | object> {
     try {
       const { login, role, email, confirmationStatus, password } = data;
 
@@ -79,8 +79,7 @@ export class AuthService {
     }
   }
 
-  //TODO: Add return type and data type
-  async logIn(data) {
+  async logIn(data: Users): Promise<object> {
     try {
       const user = await this.userService.findByEmail(data.email);
 
@@ -92,15 +91,13 @@ export class AuthService {
 
       const accessToken = await this.signToken(user);
 
-      //TODO: Rename
-      return { access_token: accessToken };
+      return { accessToken };
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
   }
 
-  //TODO: Add return type and args type
-  async checkExpireDate(user: Users, token) {
+  async checkExpireDate(user: Users, token: number): Promise<object> {
     try {
       const userExpireDate = new Date(user.expireDate).getTime();
       const currDate = new Date(
@@ -134,8 +131,7 @@ export class AuthService {
     return this.jwtService.sign(payload, { secret: jwtSecret });
   }
 
-  //TODO: add return type
-  async hashPassword(password: string) {
+  async hashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt();
     return await bcrypt.hash(password, salt);
   }

@@ -4,9 +4,7 @@ import {
   Body,
   UseFilters,
   UseInterceptors,
-  Get,
   Param,
-  Put,
   Patch,
 } from '@nestjs/common';
 import { HttpExceptionFilter } from '../http-exception.filter';
@@ -30,7 +28,7 @@ export class AuthController {
   @Patch('confirm/:id')
   async confirm(
     @Param('id') id: string,
-    @Body() data: SecretNumberDto,
+    @Body() data: SecretNumberDto
   ): Promise<Users> {
     return await this.authService.confirmEmail(id, data);
   }
@@ -38,7 +36,7 @@ export class AuthController {
   @Post('login')
   @UseInterceptors(TokenInterceptor)
   async login(
-    @Body() data: AuthRequestDto,
+    @Body() data: AuthRequestDto
     //TODO: type
   ): Promise<{ access_token: string } | object> {
     return await this.authService.logIn(data);

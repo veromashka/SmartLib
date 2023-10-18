@@ -3,7 +3,6 @@ import { CreateOrderDto } from './dto/request/create-order';
 import { OrderRepository } from './order.repository';
 import { BookService } from '../book/book.service';
 import { Orders, Users } from '@prisma/client';
-import { connect } from 'rxjs';
 
 @Injectable()
 export class OrderService {
@@ -14,7 +13,6 @@ export class OrderService {
 
   async createNew(data: CreateOrderDto, user: Users): Promise<Orders> {
     const { book, term, paid } = data;
-    //TODO to fix
     const create = book.map((item) => {
       return {
         book: {
@@ -45,11 +43,11 @@ export class OrderService {
     return await this.orderRepository.findOne({ id });
   }
 
-  async deleteById(id: string) {
+  async deleteById(id: string): Promise<void> {
     try {
       return await this.orderRepository.delete({ id: id });
-    } catch (e) {
-      throw new InternalServerErrorException();
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
   }
 }

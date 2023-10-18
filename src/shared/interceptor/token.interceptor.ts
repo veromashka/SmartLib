@@ -17,7 +17,7 @@ export class TokenInterceptor implements NestInterceptor {
 
   intercept(
     context: ExecutionContext,
-    next: CallHandler<Users>,
+    next: CallHandler<Users>
   ): Observable<Users> {
     return next.handle().pipe(
       map((user) => {
@@ -26,7 +26,7 @@ export class TokenInterceptor implements NestInterceptor {
 
         response.header('Authorization', `Bearer ${token}`);
         return user;
-      }),
+      })
     );
   }
 }

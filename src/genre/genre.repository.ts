@@ -7,11 +7,11 @@ import { Genres } from '@prisma/client';
 export class GenreRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(createDataBody: CreateGenreRequestDto) {
+  async create(createDataBody: CreateGenreRequestDto): Promise<Genres> {
     return await this.prisma.genres.create({ data: createDataBody });
   }
 
-  async getById(id: string) {
+  async getById(id: string): Promise<Genres> {
     return await this.prisma.genres.findUnique({ where: { id } });
   }
 

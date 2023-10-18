@@ -1,5 +1,5 @@
 import { UserDto } from './user.dto';
-import { IsArray, IsObject, IsOptional } from 'class-validator';
+import { IsOptional } from 'class-validator';
 
 export class UpdateUserDto extends UserDto {
   @IsOptional()
@@ -10,8 +10,4 @@ export class UpdateUserDto extends UserDto {
 
   @IsOptional()
   password: string;
-
-  //TODO: remove
-  @IsOptional()
-  confirmationStatus: boolean;
 }
