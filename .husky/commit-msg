@@ -1,0 +1,23 @@
+#!/bin/bash
+
+echo "=============================================================================================================="
+echo "Checking commit name..."
+
+INPUT_FILE=$1
+START_LINE=`head -n1 $INPUT_FILE`
+
+PATTERN="^(feat|bug|ref|fix|chore|ci|docs|pref|revert|style|test):[[:space:]]+[A-Z]+[A-Z]+[A-Z]+[-]+[a-z0-9[:space:]]+$"
+
+if [[ ! $START_LINE =~ $PATTERN ]]; then
+  echo "
+  //////
+  There is something wrong with your commit message. \n
+  Commit messages in this project must adhere to this contract: \n
+  feat|bug|ref: Test commit message \n
+  PS: commit message must be like: feat/bug/ref/fix/chore/ci/docs/pref/revert/style/test: TRK-000 test commit message \n
+  //////
+  "
+  exit 1
+fi
+
+echo "//////Success!//////"
