@@ -17,7 +17,9 @@ export class UserService {
     return await this.userRepository.findOneById(id);
   }
   async update(id: string, data: UpdateUserDto): Promise<Users> {
+    console.log('click');
     try {
+      console.log(data);
       return await this.userRepository.update(id, data);
     } catch (e) {
       throw new BadRequestException(e.message, {

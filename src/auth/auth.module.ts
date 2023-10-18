@@ -8,7 +8,6 @@ import { AuthRepository } from './auth.repository';
 import { UserRepository } from '../user/user.repository';
 import { JwtService } from '@nestjs/jwt';
 import { EmailService } from '../mail/mail.service';
-import { ConfigService } from '@nestjs/config';
 
 @Module({
   providers: [
@@ -17,7 +16,6 @@ import { ConfigService } from '@nestjs/config';
     UserRepository,
     UserService,
     EmailService,
-    ConfigService,
     JwtService,
     PrismaService,
   ],
