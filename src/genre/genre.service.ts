@@ -18,9 +18,4 @@ export class GenreService {
   async getAll(): Promise<Genres[]> {
     return await this.genreRepository.getAll();
   }
-  //TODO
-  // async deleteGenreById(): Promise<Genres[]> {
-  //   this.logger.log('GET ALL BOOKS');
-  //   return this.prisma.genres.findMany();
-  // }
 }

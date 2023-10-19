@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
+import constants from '../shared/util/constants';
 
-const subject = 'Welcome to Nice App! Confirm your Email';
 @Injectable()
 export class EmailService {
   private transporter: nodemailer.Transporter;
@@ -34,11 +34,9 @@ export class EmailService {
       <p>Your SmartLib </p>
   `;
     const mailOptions = {
-      //TODO: move
-      from: 'grigorivveronika@gmail.com',
+      from: this.configService.get<string>('EMAIL'),
       to: email,
-      //TODO: move to const
-      subject,
+      subject: constants.subjectText,
       html: output,
     };
 

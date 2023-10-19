@@ -13,8 +13,10 @@ import { AuthRepository } from './auth.repository';
 import { EmailService } from '../mail/mail.service';
 import constants from '../shared/util/constants';
 import { newExpDate } from '../shared/util/date';
-import { SecretNumberDto } from './dto/request';
+import { AuthRequestDto, SecretNumberDto } from './dto/request';
 import { ConfigService } from '@nestjs/config';
+import { LoginResponseDto } from './dto/response/login.dto';
+import { SignupResponseDto } from './dto/response/signup.dto';
 
 @Injectable()
 export class AuthService {
@@ -26,33 +28,31 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  async signUp(data: CreateUserDto): Promise<Users | object> {
+  async signUp(data: CreateUserDto): Promise<SignupResponseDto> {
     try {
-      const { login, role, email, confirmationStatus, password } = data;
+      const { login, email, password } = data;
 
       const user = await this.userService.findByEmail(email);
       const confirmationNumber = await this.generateSecretNumber();
       if (user && !user.confirmationStatus) {
-        //TODO: add user update
+        await this.userService.update(user.id, data);
         return await this.checkExpireDate(user, confirmationNumber);
       }
       const hashedPassword = await this.hashPassword(password);
 
       const newExpTime = await newExpDate(constants.durationString);
-
+      console.log(newExpTime);
       const createdUser = await this.authRepository.signUp({
         login,
-        role,
         email,
         confirmationNumber,
-        confirmationStatus,
         expireDate: new Date(newExpTime).toISOString(),
         password: hashedPassword,
       });
 
       await this.mailService.sendEmail(email, confirmationNumber);
 
-      return createdUser;
+      return { createdUser };
     } catch (e) {
       throw new BadRequestException(e.message);
     }
@@ -79,7 +79,7 @@ export class AuthService {
     }
   }
 
-  async logIn(data: Users): Promise<object> {
+  async logIn(data: AuthRequestDto): Promise<LoginResponseDto> {
     try {
       const user = await this.userService.findByEmail(data.email);
 
@@ -97,15 +97,20 @@ export class AuthService {
     }
   }
 
-  async checkExpireDate(user: Users, token: number): Promise<object> {
+  async checkExpireDate(
+    user: Users,
+    token: number
+  ): Promise<{ message: string }> {
     try {
       const userExpireDate = new Date(user.expireDate).getTime();
       const currDate = new Date(
         constants.currentDate.format(constants.dayFormat)
       ).getTime();
+
       if (userExpireDate <= currDate) {
         await this.mailService.sendEmail(user.email, token);
       }
+
       return {
         message: 'Email with secret code was sent ',
       };

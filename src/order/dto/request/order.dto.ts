@@ -2,7 +2,6 @@ import {
   ArrayMinSize,
   IsArray,
   IsBoolean,
-  IsInt,
   IsNumber,
   IsString,
 } from 'class-validator';
@@ -14,7 +13,7 @@ export class OrderDto {
   @IsNumber()
   term: number;
 
-  @IsInt()
+  @IsString()
   user: string;
 
   @IsArray()

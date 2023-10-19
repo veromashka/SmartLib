@@ -16,8 +16,8 @@ export class UserService {
   async update(id: string, data: UpdateUserDto): Promise<Users> {
     try {
       return await this.userRepository.update(id, data);
-    } catch (e) {
-      throw new BadRequestException(e.message);
+    } catch (error) {
+      throw new BadRequestException(error.message);
     }
   }
 }
