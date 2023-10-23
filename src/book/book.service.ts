@@ -7,6 +7,9 @@ import { BookRepository } from './book.repository';
 import { CreateBookRequestDto } from './dto/request';
 import { UpdateBookRequestDto } from './dto/request';
 import { Books } from '@prisma/client';
+// import constants from '../shared/util/constants';
+
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class BookService {
@@ -14,7 +17,12 @@ export class BookService {
 
   async create(data: CreateBookRequestDto): Promise<Books> {
     try {
-      const { title, author, releaseYear, category, genres, price } = data;
+      const { title, author, releaseDate, category, genres, price, currency } =
+        data;
+
+      const editedDate = new Date(
+        dayjs(releaseDate).format('YYYY-MM-DD')
+      ).toISOString();
 
       const create = genres.map((genre) => {
         return {
@@ -30,8 +38,9 @@ export class BookService {
         price,
         title,
         author,
-        releaseYear,
+        currency,
         category,
+        releaseDate: editedDate,
         genre: {
           create,
         },

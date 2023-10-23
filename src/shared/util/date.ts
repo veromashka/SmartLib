@@ -3,7 +3,6 @@ import constants from './constants';
 
 const currentDate = dayjs();
 export async function newExpDate(durationString: string): Promise<Date> {
-  console.log('entrreyDate');
   const match = durationString.match(/(\d+)([smhdwMy]|ms)/);
   if (match) {
     const value = parseInt(match[1]);
@@ -29,7 +28,7 @@ export async function newExpDate(durationString: string): Promise<Date> {
       console.error('Invalid duration unit.');
     }
     // console.log(newDate.format(dayFormat));
-    console.log(constants.dayFormat);
+
     return newDate.format(constants.dayFormat); // Return the formatted date as a locale-specific time string
   } else {
     console.error('Invalid duration format.');

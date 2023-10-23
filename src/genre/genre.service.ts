@@ -1,7 +1,13 @@
 import { Genres } from '@prisma/client';
 import { GenreRepository } from './genre.repository';
 import { CreateGenreRequestDto } from './dto/request';
-import { Logger, Injectable } from '@nestjs/common';
+import {
+  Logger,
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 
 @Injectable()
 export class GenreService {
@@ -10,12 +16,24 @@ export class GenreService {
 
   //CREATE
   async createGenre(data: CreateGenreRequestDto): Promise<Genres> {
-    return this.genreRepository.create({ ...data });
+    try {
+      return this.genreRepository.create({ ...data });
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
   async getById(id: string): Promise<Genres> {
-    return await this.genreRepository.getById(id);
+    try {
+      return await this.genreRepository.getById(id);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
   }
   async getAll(): Promise<Genres[]> {
-    return await this.genreRepository.getAll();
+    try {
+      return await this.genreRepository.getAll();
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 }

@@ -1,0 +1,20 @@
+version: '1.0'
+
+networks:
+  db_net:
+    driver: bridge
+
+services:
+  database:
+    container_name: smart-lib
+    image: smart-lib
+    ports:
+      - '5432:5432'
+    # volumes:
+    # - /data/postgres:/var/lib/postgresql
+    networks:
+      - db_net
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: user
+      POSTGRES_DB: library

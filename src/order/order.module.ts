@@ -6,6 +6,8 @@ import { OrderController } from './order.controller';
 import { OrderRepository } from './order.repository';
 import { BookService } from '../book/book.service';
 import { BookRepository } from '../book/book.repository';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   providers: [
@@ -14,6 +16,8 @@ import { BookRepository } from '../book/book.repository';
     OrderService,
     OrderRepository,
     PrismaService,
+    JwtService,
+    ConfigService,
   ],
   controllers: [OrderController],
   exports: [OrderService],

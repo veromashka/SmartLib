@@ -1,5 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
+  binaryTargets = ["rhel-openssl-1.0.x", "native"]
   previewFeatures = ["fieldReference"]
 }
 
@@ -10,7 +11,7 @@ datasource db {
 
 model Users {
   id                 String    @id @default(uuid())
-  login              String
+  login              String    @unique
   role               Roles     @default(USER)
   email              String    @unique
   password           String
@@ -23,13 +24,14 @@ model Users {
 }
 
 model Orders {
-  id        String   @id @default(uuid())
+  id        String       @id @default(uuid())
   paid      Boolean
   term      Int
-  createdAt DateTime @default(now())
+  createdAt DateTime     @default(now())
+  finishDate DateTime
   books     BooksOrder[]
   userId    String
-  user      Users   @relation(fields: [userId], references: [id])
+  user      Users        @relation(fields: [userId], references: [id])
 }
 
 model Profiles {
@@ -47,13 +49,15 @@ model Books {
   id          String       @id @default(uuid())
   title       String
   price       Int
+  currency    Currencies
   author      String
-  releaseYear Int
+  releaseDate DateTime
   category    Categories   @default(FOR_CHILDREN)
   genre       BookGenres[]
   orders      BooksOrder[]
 }
-model BooksOrder{
+
+model BooksOrder {
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
   bookId    String
@@ -66,7 +70,7 @@ model BooksOrder{
 
 model Genres {
   id   String       @id @default(uuid())
-  name String
+  name String       @unique
   book BookGenres[]
 }
 
@@ -91,4 +95,10 @@ enum Roles {
   USER
   EDITOR
   ADMIN
+}
+
+enum Currencies{
+  USD
+  UAH
+  EUR
 }

@@ -38,23 +38,25 @@ export class AuthService {
         await this.userService.update(user.id, data);
         return await this.checkExpireDate(user, confirmationNumber);
       }
+
       const hashedPassword = await this.hashPassword(password);
 
       const newExpTime = await newExpDate(constants.durationString);
-      console.log(newExpTime);
+
       const createdUser = await this.authRepository.signUp({
         login,
         email,
         confirmationNumber,
+        confirmationStatus: false,
         expireDate: new Date(newExpTime).toISOString(),
         password: hashedPassword,
       });
 
       await this.mailService.sendEmail(email, confirmationNumber);
 
-      return { createdUser };
-    } catch (e) {
-      throw new BadRequestException(e.message);
+      return { createdUser, message: 'Please check your post' };
+    } catch (error) {
+      throw new BadRequestException(error.message);
     }
   }
 
@@ -93,7 +95,7 @@ export class AuthService {
 
       return { accessToken };
     } catch (error) {
-      throw new InternalServerErrorException(error.message);
+      throw new BadRequestException(error.message);
     }
   }
 

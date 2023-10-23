@@ -9,18 +9,22 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
 import { OrderModule } from './order/order.module';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './auth/strategy/jwt-strategy';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     BooksModule,
     OrderModule,
+    PassportModule,
     GenreModule,
     UserModule,
     AuthModule,
     MailModule,
   ],
-  providers: [AppService],
+  providers: [AppService, JwtService],
   controllers: [AppController],
 })
 export class AppModule implements NestModule {

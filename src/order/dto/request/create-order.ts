@@ -1,5 +1,5 @@
 import { OrderDto } from './order.dto';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateOrderDto extends OrderDto {
   @IsNotEmpty()
@@ -7,6 +7,9 @@ export class CreateOrderDto extends OrderDto {
 
   @IsNotEmpty()
   term: number;
+
+  @IsOptional()
+  finishDate: Date;
 
   @IsNotEmpty()
   books: string[];

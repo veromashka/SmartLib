@@ -17,6 +17,7 @@ export class UserDto {
   @IsString()
   password: string;
 
+  @IsOptional()
   @IsBoolean()
   confirmationStatus: boolean;
 

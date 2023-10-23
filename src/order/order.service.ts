@@ -3,6 +3,7 @@ import { CreateOrderDto } from './dto/request/create-order';
 import { OrderRepository } from './order.repository';
 import { BookService } from '../book/book.service';
 import { Orders } from '@prisma/client';
+import { newExpDate } from '../shared/util/date';
 
 @Injectable()
 export class OrderService {
@@ -13,7 +14,7 @@ export class OrderService {
 
   async createNew(data: CreateOrderDto): Promise<Orders> {
     try {
-      const { book, term, paid } = data;
+      const { book, term } = data;
 
       const create = book.map((item) => {
         return {
@@ -25,9 +26,12 @@ export class OrderService {
         };
       });
 
+      const dateOfEnd = await newExpDate(term + 'd');
+      // @ts-ignore
       return await this.orderRepository.create({
         term,
-        paid,
+        paid: false,
+        finishDate: new Date(dateOfEnd).toISOString(),
         user: {
           connect: {
             id: '8aa90bdd-05dc-4537-bc8b-93d33a5b61c7',

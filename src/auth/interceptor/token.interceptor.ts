@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Users } from '@prisma/client';
-import { AuthService } from '../../auth/auth.service';
+import { AuthService } from '../auth.service';
 
 @Injectable()
 export class TokenInterceptor implements NestInterceptor {
