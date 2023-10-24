@@ -46,7 +46,9 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Success.' })
   @ApiResponse({ status: 400, description: 'Bad request.' })
   @UseInterceptors(TokenInterceptor)
-  async login(@Body() data: AuthRequestDto): Promise<LoginResponseDto> {
+  async login(
+    @Body() data: AuthRequestDto
+  ): Promise<{ access_token: string } | object> {
     return await this.authService.logIn(data);
   }
 
