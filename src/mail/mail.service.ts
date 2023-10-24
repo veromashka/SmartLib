@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
+import constants from '../shared/util/constants';
 
-const
 @Injectable()
 export class EmailService {
   private transporter: nodemailer.Transporter;
@@ -23,7 +23,7 @@ export class EmailService {
     });
   }
 
-  async sendEmail(email: string, token: number) {
+  async sendEmail(email: string, token: number): Promise<boolean> {
     const output = `
       <h1>Email Confirmation</h1>
       <p>Dear User,</p>
@@ -34,11 +34,9 @@ export class EmailService {
       <p>Your SmartLib </p>
   `;
     const mailOptions = {
-      //TODO: move
-      from: 'grigorivveronika@gmail.com',
+      from: this.configService.get<string>('EMAIL'),
       to: email,
-      //TODO: move to const
-      subject: 'Welcome to Nice App! Confirm your Email',
+      subject: constants.subjectText,
       html: output,
     };
 

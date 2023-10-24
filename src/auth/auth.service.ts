@@ -11,16 +11,12 @@ import { Users } from '@prisma/client';
 import { CreateUserDto } from '../user/dto/request/create-user.dto';
 import { AuthRepository } from './auth.repository';
 import { EmailService } from '../mail/mail.service';
-import {
-  currentDate,
-  dayFormat,
-  durationString,
-  maxNumber,
-  minNumber,
-  newExpDate,
-} from '../shared/util/constants';
-import { SecretNumberDto } from './dto/request/secret-number.dto';
+import constants from '../shared/util/constants';
+import { newExpDate } from '../shared/util/date';
+import { AuthRequestDto, SecretNumberDto } from './dto/request';
 import { ConfigService } from '@nestjs/config';
+import { LoginResponseDto } from './dto/response/login.dto';
+import { SignupResponseDto } from './dto/response/signup.dto';
 
 @Injectable()
 export class AuthService {
@@ -29,38 +25,38 @@ export class AuthService {
     private userService: UserService,
     private mailService: EmailService,
     private authRepository: AuthRepository,
-    private jwtService: JwtService,
+    private jwtService: JwtService
   ) {}
 
-  async signUp(data: CreateUserDto) {
+  async signUp(data: CreateUserDto): Promise<SignupResponseDto> {
     try {
-      const { login, role, email, confirmationStatus, password } = data;
+      const { login, email, password } = data;
 
       const user = await this.userService.findByEmail(email);
       const confirmationNumber = await this.generateSecretNumber();
       if (user && !user.confirmationStatus) {
-        //TODO: add user update
+        await this.userService.update(user.id, data);
         return await this.checkExpireDate(user, confirmationNumber);
       }
+
       const hashedPassword = await this.hashPassword(password);
 
-      const newExpTime = await newExpDate(durationString);
+      const newExpTime = await newExpDate(constants.durationString);
 
       const createdUser = await this.authRepository.signUp({
         login,
-        role,
         email,
         confirmationNumber,
-        confirmationStatus,
+        confirmationStatus: false,
         expireDate: new Date(newExpTime).toISOString(),
         password: hashedPassword,
       });
 
       await this.mailService.sendEmail(email, confirmationNumber);
 
-      return createdUser;
-    } catch (e) {
-      throw new BadRequestException(e.message);
+      return { createdUser, message: 'Please check your post' };
+    } catch (error) {
+      throw new BadRequestException(error.message);
     }
   }
 
@@ -85,8 +81,7 @@ export class AuthService {
     }
   }
 
-  //TODO: Add return type and data type
-  async logIn(data) {
+  async logIn(data: AuthRequestDto): Promise<LoginResponseDto> {
     try {
       const user = await this.userService.findByEmail(data.email);
 
@@ -98,21 +93,26 @@ export class AuthService {
 
       const accessToken = await this.signToken(user);
 
-      //TODO: Rename
-      return { access_token: accessToken };
+      return { accessToken };
     } catch (error) {
-      throw new InternalServerErrorException(error.message);
+      throw new BadRequestException(error.message);
     }
   }
 
-  //TODO: Add return type and args type
-  async checkExpireDate(user: Users, token) {
+  async checkExpireDate(
+    user: Users,
+    token: number
+  ): Promise<{ message: string }> {
     try {
       const userExpireDate = new Date(user.expireDate).getTime();
-      const currDate = new Date(currentDate.format(dayFormat)).getTime();
+      const currDate = new Date(
+        constants.currentDate.format(constants.dayFormat)
+      ).getTime();
+
       if (userExpireDate <= currDate) {
         await this.mailService.sendEmail(user.email, token);
       }
+
       return {
         message: 'Email with secret code was sent ',
       };
@@ -122,7 +122,10 @@ export class AuthService {
   }
 
   async generateSecretNumber(): Promise<number> {
-    return Math.floor(Math.random() * (maxNumber - minNumber) + minNumber);
+    return Math.floor(
+      Math.random() * (constants.maxNumber - constants.minNumber) +
+        constants.minNumber
+    );
   }
 
   async signToken(user: Users): Promise<string> {
@@ -135,15 +138,14 @@ export class AuthService {
     return this.jwtService.sign(payload, { secret: jwtSecret });
   }
 
-  //TODO: add return type
-  async hashPassword(password: string) {
+  async hashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt();
     return await bcrypt.hash(password, salt);
   }
 
   async comparePassword(
     password: string,
-    hashedPassword: string,
+    hashedPassword: string
   ): Promise<boolean> {
     const result = await bcrypt.compare(password, hashedPassword);
 

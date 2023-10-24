@@ -4,16 +4,25 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { BookRepository } from './book.repository';
-import { CreateBookRequestDto } from './dto/request/create-book.dto';
-import { UpdateBookRequestDto } from './dto/request/update-book.dto';
+import { CreateBookRequestDto } from './dto/request';
+import { UpdateBookRequestDto } from './dto/request';
+import { Books } from '@prisma/client';
+// import constants from '../shared/util/constants';
+
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class BookService {
   constructor(private bookRepository: BookRepository) {}
 
-  async create(data: CreateBookRequestDto) {
+  async create(data: CreateBookRequestDto): Promise<Books> {
     try {
-      const { title, author, releaseYear, category, genres, price } = data;
+      const { title, author, releaseDate, category, genres, price, currency } =
+        data;
+
+      const editedDate = new Date(
+        dayjs(releaseDate).format('YYYY-MM-DD')
+      ).toISOString();
 
       const create = genres.map((genre) => {
         return {
@@ -29,31 +38,27 @@ export class BookService {
         price,
         title,
         author,
-        releaseYear,
+        currency,
         category,
+        releaseDate: editedDate,
         genre: {
           create,
         },
       });
-    } catch (e) {
-      // this.logger.error(e);
-      throw new BadRequestException('Something bad happened');
+    } catch (error) {
+      throw new BadRequestException(error.message);
     }
   }
 
-  //TODO: return type
-  async getAll() {
-    // this.logger.log('GET ALL');
+  async getAll(): Promise<Books[]> {
     return await this.bookRepository.findAll();
   }
 
-  //TODO: return type
-  async getById(id: string) {
+  async getById(id: string): Promise<Books> {
     return await this.bookRepository.findOne({ id });
   }
 
-  //TODO: return type
-  async update(id: string, data: UpdateBookRequestDto) {
+  async update(id: string, data: UpdateBookRequestDto): Promise<Books> {
     try {
       return await this.bookRepository.update(id, data);
     } catch (e) {
@@ -63,7 +68,6 @@ export class BookService {
     }
   }
 
-  //TODO: return type
   async deleteById(id: string): Promise<void> {
     try {
       await this.bookRepository.delete({ id: id });

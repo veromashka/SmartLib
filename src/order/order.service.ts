@@ -2,57 +2,61 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/request/create-order';
 import { OrderRepository } from './order.repository';
 import { BookService } from '../book/book.service';
-import { Users } from '@prisma/client';
+import { Orders } from '@prisma/client';
+import { newExpDate } from '../shared/util/date';
 
 @Injectable()
 export class OrderService {
   constructor(
     private orderRepository: OrderRepository,
-    private bookService: BookService,
+    private bookService: BookService
   ) {}
 
-  async createNew(data: CreateOrderDto, user: Users) {
-    const { book, term, paid } = data;
+  async createNew(data: CreateOrderDto): Promise<Orders> {
+    try {
+      const { book, term } = data;
 
-    const create = book.map((item) => {
-      return {
-        books: {
+      const create = book.map((item) => {
+        return {
+          book: {
+            connect: {
+              id: item,
+            },
+          },
+        };
+      });
+
+      const dateOfEnd = await newExpDate(term + 'd');
+      // @ts-ignore
+      return await this.orderRepository.create({
+        term,
+        paid: false,
+        finishDate: new Date(dateOfEnd).toISOString(),
+        user: {
           connect: {
-            id: item,
+            id: '8aa90bdd-05dc-4537-bc8b-93d33a5b61c7',
           },
         },
-      };
-    });
-
-    return await this.orderRepository.create({
-      term,
-      paid,
-      user: {
-        connect: {
-          id: user.id,
-        },
-      },
-      books: { create },
-    });
+        books: { create },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
-  //TODO: return Type
-  async getAll() {
-    // this.logger.log('GET ALL');
+  async getAll(): Promise<Orders[]> {
     return await this.orderRepository.findAll();
   }
 
-  //TODO: return Type
-  async getById(id: string) {
+  async getById(id: string): Promise<Orders> {
     return await this.orderRepository.findOne({ id });
   }
 
-  //TODO: return Type
-  async deleteById(id: string) {
+  async deleteById(id: string): Promise<void> {
     try {
       return await this.orderRepository.delete({ id: id });
-    } catch (e) {
-      throw new InternalServerErrorException();
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
   }
 }

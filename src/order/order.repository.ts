@@ -6,7 +6,7 @@ import { Injectable } from '@nestjs/common';
 export class OrderRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(createDto: Prisma.OrdersCreateInput) {
+  async create(createDto: Prisma.OrdersCreateInput): Promise<Orders> {
     return this.prisma.orders.create({
       data: createDto,
     });
@@ -17,10 +17,10 @@ export class OrderRepository {
   async findAll(): Promise<Orders[]> {
     return await this.prisma.orders.findMany();
   }
-  async update(id: string, updateData: Partial<Orders>) {
+  async update(id: string, updateData: Partial<Orders>): Promise<Orders> {
     return await this.prisma.orders.update({ where: { id }, data: updateData });
   }
-  async delete(where: Prisma.OrdersWhereUniqueInput): Promise<Orders> {
-    return await this.prisma.orders.delete({ where });
+  async delete(where: Prisma.OrdersWhereUniqueInput): Promise<void> {
+    await this.prisma.orders.delete({ where });
   }
 }

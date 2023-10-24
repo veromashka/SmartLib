@@ -1,16 +1,21 @@
-import { Controller, Post, Body, UseFilters } from '@nestjs/common';
+import { Controller, Post, Body, UseFilters, UseGuards } from '@nestjs/common';
 import { HttpExceptionFilter } from '../http-exception.filter';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/request/create-order';
-import { Users } from '@prisma/client';
+import { Orders } from '@prisma/client';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('order')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('accessToken')
 @UseFilters(new HttpExceptionFilter())
+@ApiTags('order')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
   @Post('new')
-  async createOrder(@Body() data: CreateOrderDto, user: Users) {
-    return this.orderService.createNew(data, user);
+  async createOrder(@Body() data: CreateOrderDto): Promise<Orders> {
+    return this.orderService.createNew(data);
   }
 }

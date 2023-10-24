@@ -1,22 +1,16 @@
-import {
-  ArrayMinSize,
-  IsArray,
-  IsBoolean,
-  IsInt,
-  IsNumber,
-  IsString,
-} from 'class-validator';
+import { ArrayMinSize, IsArray, IsNumber, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class OrderDto {
-  @IsBoolean()
-  paid: boolean;
-
+  @ApiProperty({ description: 'Termin', example: 22 })
   @IsNumber()
   term: number;
 
-  @IsInt()
+  @ApiProperty({ description: 'User', example: { id: ' user.id' } })
+  @IsString()
   user: string;
 
+  @ApiProperty({ description: 'Book', example: ['book.id'] })
   @IsArray()
   @IsString({ each: true })
   @ArrayMinSize(1)

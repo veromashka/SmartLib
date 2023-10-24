@@ -8,9 +8,12 @@ export class CreateOrderDto extends OrderDto {
   @IsNotEmpty()
   term: number;
 
-  @IsNotEmpty()
-  bookId: string;
-
   @IsOptional()
-  createdAt: Date;
+  finishDate: Date;
+
+  @IsNotEmpty()
+  books: string[];
+
+  @IsNotEmpty()
+  user: string;
 }
