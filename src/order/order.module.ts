@@ -8,11 +8,15 @@ import { BookService } from '../book/book.service';
 import { BookRepository } from '../book/book.repository';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { UserService } from '../user/user.service';
+import { UserRepository } from '../user/user.repository';
 
 @Module({
   providers: [
     BookService,
     BookRepository,
+    UserService,
+    UserRepository,
     OrderService,
     OrderRepository,
     PrismaService,

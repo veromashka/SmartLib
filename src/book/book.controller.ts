@@ -30,7 +30,10 @@ export class BookController {
   }
 
   @Get('all')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('accessToken')
   @ApiResponse({ status: 200, description: 'Success.' })
+  @ApiResponse({ status: 401, description: 'Unatorized.' })
   @ApiResponse({ status: 500, description: 'Serveral Error.' })
   async findAll(): Promise<BookModel[]> {
     return this.bookService.getAll();

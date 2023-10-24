@@ -1,4 +1,11 @@
-import { Controller, Post, Body, UseFilters, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseFilters,
+  UseGuards,
+  Param,
+} from '@nestjs/common';
 import { HttpExceptionFilter } from '../http-exception.filter';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/request/create-order';
@@ -14,8 +21,11 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  @Post('new')
-  async createOrder(@Body() data: CreateOrderDto): Promise<Orders> {
-    return this.orderService.createNew(data);
+  @Post('/:id')
+  async createOrder(
+    @Param('id') id: string,
+    @Body() data: CreateOrderDto
+  ): Promise<Orders> {
+    return this.orderService.createNew(id, data);
   }
 }

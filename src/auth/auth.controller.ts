@@ -15,7 +15,6 @@ import { TokenInterceptor } from './interceptor/token.interceptor';
 import { CreateUserDto } from '../user/dto/request/create-user.dto';
 import { Users } from '@prisma/client';
 import { SecretNumberDto } from './dto/request/secret-number.dto';
-import { LoginResponseDto } from './dto/response/login.dto';
 import { SignupResponseDto } from './dto/response/signup.dto';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';

@@ -1,4 +1,4 @@
-import { IsDate, IsNotEmpty, IsOptional, MaxDate } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 import { BookRequestDto } from './book.dto';
 
 export class CreateBookRequestDto extends BookRequestDto {
@@ -7,9 +7,6 @@ export class CreateBookRequestDto extends BookRequestDto {
 
   @IsNotEmpty()
   author: string;
-
-  @IsNotEmpty()
-  releaseDate: Date;
 
   @IsOptional()
   genres: string[];

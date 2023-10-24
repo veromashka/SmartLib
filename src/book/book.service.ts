@@ -51,7 +51,11 @@ export class BookService {
   }
 
   async getAll(): Promise<Books[]> {
-    return await this.bookRepository.findAll();
+    try {
+      return await this.bookRepository.findAll();
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   async getById(id: string): Promise<Books> {

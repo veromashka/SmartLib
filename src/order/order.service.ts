@@ -4,19 +4,21 @@ import { OrderRepository } from './order.repository';
 import { BookService } from '../book/book.service';
 import { Orders } from '@prisma/client';
 import { newExpDate } from '../shared/util/date';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class OrderService {
   constructor(
     private orderRepository: OrderRepository,
-    private bookService: BookService
+    private bookService: BookService,
+    private userService: UserService
   ) {}
 
-  async createNew(data: CreateOrderDto): Promise<Orders> {
+  async createNew(id: string, data: CreateOrderDto): Promise<Orders> {
     try {
-      const { book, term } = data;
+      const { books, term } = data;
 
-      const create = book.map((item) => {
+      const create = books.map((item) => {
         return {
           book: {
             connect: {
@@ -27,14 +29,13 @@ export class OrderService {
       });
 
       const dateOfEnd = await newExpDate(term + 'd');
-      // @ts-ignore
       return await this.orderRepository.create({
         term,
         paid: false,
         finishDate: new Date(dateOfEnd).toISOString(),
         user: {
           connect: {
-            id: '8aa90bdd-05dc-4537-bc8b-93d33a5b61c7',
+            id: id,
           },
         },
         books: { create },
