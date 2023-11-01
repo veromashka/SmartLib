@@ -52,7 +52,12 @@ export class AuthService {
         password: hashedPassword,
       });
 
-      await this.mailService.sendEmail(email, confirmationNumber);
+      await this.mailService.sendEmail({
+        email: createdUser.email,
+        login: createdUser.login,
+        token: createdUser.confirmationNumber,
+        type: 'confirmation',
+      });
 
       return { createdUser, message: 'Please check your post' };
     } catch (error) {
@@ -110,7 +115,12 @@ export class AuthService {
       ).getTime();
 
       if (userExpireDate <= currDate) {
-        await this.mailService.sendEmail(user.email, token);
+        await this.mailService.sendEmail({
+          email: user.email,
+          login: user.login,
+          token: token,
+          type: 'confirmation',
+        });
       }
 
       return {

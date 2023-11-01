@@ -11,8 +11,8 @@ export class OrderRepository {
       data: createDto,
     });
   }
-  async findOne(id: Prisma.OrdersWhereUniqueInput): Promise<Orders | null> {
-    return await this.prisma.orders.findUnique({ where: id });
+  async findOne(id: string): Promise<Orders | null> {
+    return await this.prisma.orders.findUnique({ where: { id } });
   }
   async findAll(): Promise<Orders[]> {
     return await this.prisma.orders.findMany();

@@ -8,9 +8,11 @@ const dayFormat = 'YYYY-MM-DD HH:mm:ss';
 const minNumber = 10000;
 const maxNumber = 99999;
 const durationString = '1h';
-const subjectText = 'Welcome to Nice App! Confirm your Email';
+const confirmationSubjectText = 'Email Confirmation';
+const notificationSubjectText = 'Reminder: Your Book Rental Ends Tomorrow';
 const superPassword = configService.get<string>('PASSWORD_REGEXP');
-const avaliableDate = dayjs().format('YYYY-MM-DD');
+
+const avaliableDate = dayjs(Date.now()).format('YYYY-MM-DD');
 
 const constants = {
   currentDate,
@@ -18,7 +20,8 @@ const constants = {
   minNumber,
   maxNumber,
   durationString,
-  subjectText,
+  confirmationSubjectText,
+  notificationSubjectText,
   avaliableDate,
   superPassword,
 };

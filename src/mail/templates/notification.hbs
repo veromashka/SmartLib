@@ -1,0 +1,31 @@
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Notification</title>
+  </head>
+  <body>
+    <h1>SmartLib reminder</h1>
+    Dear
+    {{login}},
+    <p>Hi!</p>
+    <p>You rent book <strong> {{bookTitle}}</strong> on SmartLib platform</p>
+    <p>We hope this message finds you well. We want to remind you that your
+      current book rental is scheduled to end tomorrow, [End Date]. We hope
+      you've enjoyed your reading experience so far! To ensure a smooth return
+      process, please take note of the following details:
+    </p>
+    <p>Book Title:
+      {{bookTitle}}
+      Rental End Date:
+      {{finishDate}}
+    </p>
+    <p>To continue renting, please pay for it</p>
+    <p>Thank you for choosing our platform for your book rental needs. We hope
+      you've enjoyed your reading experience, and we look forward to serving you
+      in the future. Happy reading!
+      <br />
+      Sincerely,</p>
+    <p>Your SmartLib </p>
+  </body>
+</html>

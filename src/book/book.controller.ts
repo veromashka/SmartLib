@@ -14,6 +14,7 @@ import { BookService } from './book.service';
 import { UpdateBookRequestDto } from './dto/request/update-book.dto';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Cron } from '@nestjs/schedule';
 
 @Controller('book')
 @UseGuards(JwtAuthGuard)
@@ -26,9 +27,9 @@ export class BookController {
   @ApiResponse({ status: 201, description: 'Created.' })
   @ApiResponse({ status: 400, description: 'Bad request.' })
   async createBook(@Body() data: CreateBookRequestDto): Promise<BookModel> {
-    return this.bookService.create(data);
+    return await this.bookService.create(data);
   }
-
+  @Cron('2 * * * * *')
   @Get('all')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('accessToken')

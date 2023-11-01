@@ -5,6 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 
 (async function (): Promise<void> {
   const app = await NestFactory.create(AppModule);
+
   app.setGlobalPrefix('api');
   const config = new DocumentBuilder()
     .setTitle('SmartLib api')

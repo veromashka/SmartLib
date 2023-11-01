@@ -7,9 +7,7 @@ import { BookRepository } from './book.repository';
 import { CreateBookRequestDto } from './dto/request';
 import { UpdateBookRequestDto } from './dto/request';
 import { Books } from '@prisma/client';
-// import constants from '../shared/util/constants';
-
-import * as dayjs from 'dayjs';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class BookService {
@@ -20,9 +18,7 @@ export class BookService {
       const { title, author, releaseDate, category, genres, price, currency } =
         data;
 
-      const editedDate = new Date(
-        dayjs(releaseDate).format('YYYY-MM-DD')
-      ).toISOString();
+      const editedDate = new Date(releaseDate);
 
       const create = genres.map((genre) => {
         return {

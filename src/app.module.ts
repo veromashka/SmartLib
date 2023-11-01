@@ -11,11 +11,15 @@ import { MailModule } from './mail/mail.module';
 import { OrderModule } from './order/order.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtService } from '@nestjs/jwt';
+import { ScheduleModule } from '@nestjs/schedule';
+import { BookOrderModule } from './bookOrder/bookOrder.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    ScheduleModule.forRoot(),
     BooksModule,
+    BookOrderModule,
     OrderModule,
     PassportModule,
     GenreModule,

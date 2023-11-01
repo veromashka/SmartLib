@@ -10,6 +10,7 @@ import {
   MaxLength,
   Min,
   Max,
+  MinDate,
 } from 'class-validator';
 import { Categories, Currencies } from 'src/common/enums';
 import { ApiProperty } from '@nestjs/swagger';

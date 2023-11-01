@@ -1,51 +1,51 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
 import constants from '../shared/util/constants';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class EmailService {
-  private transporter: nodemailer.Transporter;
+  constructor(
+    private configService: ConfigService,
+    public mailerService: MailerService
+  ) {}
 
-  constructor(private configService: ConfigService) {
-    const userEmail = this.configService.get<string>('EMAIL');
-    const userPassword = this.configService.get<string>('PASSWORD');
-
-    this.transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: userEmail,
-        pass: userPassword,
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
-    });
-  }
-
-  async sendEmail(email: string, token: number): Promise<boolean> {
-    const output = `
-      <h1>Email Confirmation</h1>
-      <p>Dear User,</p>
-      <p>You signed up to SmartLib platform from ${email}</p>
-      <p>Your secret number is: ${token}</p>
-      <p>To continue registration please type this code in input</p>
-      <p>Sincerely,</p>
-      <p>Your SmartLib </p>
-  `;
-    const mailOptions = {
-      from: this.configService.get<string>('EMAIL'),
-      to: email,
-      subject: constants.subjectText,
-      html: output,
-    };
-
-    try {
-      await this.transporter.sendMail(mailOptions);
-      return true; // Email sent successfully
-    } catch (error) {
-      throw new BadRequestException('Email sending failed:', error);
-      return false; // Email sending failed
+  async sendEmail(data): Promise<any> {
+    if (data.type === 'notification') {
+      await this.mailerService
+        .sendMail({
+          from: this.configService.get<string>('EMAIL'),
+          to: data.email,
+          subject: constants.notificationSubjectText,
+          template: './notification',
+          context: {
+            login: data.login,
+            bookTitle: data.bookTitle,
+            finishDate: data.finishDate,
+          },
+        })
+        .then((success) => {
+          console.log(success);
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+    } else {
+      await this.mailerService
+        .sendMail({
+          from: this.configService.get<string>('EMAIL'),
+          to: data.email,
+          subject: constants.confirmationSubjectText,
+          template: './confirmation',
+          context: { login: data.login, email: data.email, token: data.token },
+        })
+        .then(() => {
+          console.log('success');
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
     }
   }
 }

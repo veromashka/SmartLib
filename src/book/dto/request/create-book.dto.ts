@@ -1,5 +1,13 @@
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import {
+  IsDate,
+  IsNotEmpty,
+  IsOptional,
+  MaxDate,
+  MinDate,
+} from 'class-validator';
 import { BookRequestDto } from './book.dto';
+import constants from '../../../shared/util/constants';
+import { Type } from 'class-transformer';
 
 export class CreateBookRequestDto extends BookRequestDto {
   @IsNotEmpty()
@@ -7,6 +15,11 @@ export class CreateBookRequestDto extends BookRequestDto {
 
   @IsNotEmpty()
   author: string;
+
+  @IsNotEmpty()
+  @Type(() => Date)
+  @MaxDate(new Date(constants.avaliableDate))
+  releaseDate: Date;
 
   @IsOptional()
   genres: string[];

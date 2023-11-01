@@ -62,9 +62,8 @@ model BooksOrder {
   updatedAt DateTime? @updatedAt
   bookId    String
   orderId   String
-  book      Books     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  books      Books    @relation(fields: [bookId], references: [id], onDelete: Cascade)
   order     Orders    @relation(fields: [orderId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-
   @@id([orderId, bookId])
 }
 
