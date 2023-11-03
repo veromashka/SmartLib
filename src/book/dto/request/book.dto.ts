@@ -32,6 +32,7 @@ export class BookRequestDto {
   @ApiProperty({ description: 'Release Year', example: '2003-10-02' })
   @IsDate()
   @MaxDate(new Date(constants.avaliableDate))
+  @MinDate(new Date('1800-01-01'))
   releaseDate: Date;
 
   @ApiProperty({ description: 'Price', example: 200 })

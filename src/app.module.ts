@@ -13,6 +13,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtService } from '@nestjs/jwt';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BookOrderModule } from './bookOrder/bookOrder.module';
+import { LoggerModule } from './modules/logger/logger.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { BookOrderModule } from './bookOrder/bookOrder.module';
     ScheduleModule.forRoot(),
     BooksModule,
     BookOrderModule,
+    LoggerModule,
     OrderModule,
     PassportModule,
     GenreModule,

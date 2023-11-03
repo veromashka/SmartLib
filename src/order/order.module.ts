@@ -10,10 +10,10 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from '../user/user.service';
 import { UserRepository } from '../user/user.repository';
-import { MailerService } from '@nestjs-modules/mailer';
 import { EmailService } from '../mail/mail.service';
 import { BookOrderService } from '../bookOrder/bookOrder.service';
 import { BookOrderRepository } from '../bookOrder/bookOrder.repository';
+import { MyLogger } from '../modules/logger/logger.service';
 
 @Module({
   providers: [
@@ -27,6 +27,7 @@ import { BookOrderRepository } from '../bookOrder/bookOrder.repository';
     JwtService,
     ConfigService,
     EmailService,
+    MyLogger,
     BookOrderService,
     BookOrderRepository,
   ],

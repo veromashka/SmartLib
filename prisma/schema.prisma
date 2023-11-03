@@ -63,7 +63,7 @@ model BooksOrder {
   bookId    String
   orderId   String
   books      Books    @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  order     Orders    @relation(fields: [orderId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  order     Orders    @relation(fields: [orderId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   @@id([orderId, bookId])
 }
 

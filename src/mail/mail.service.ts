@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
 import constants from '../shared/util/constants';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -12,7 +11,7 @@ export class EmailService {
   ) {}
 
   async sendEmail(data): Promise<any> {
-    if (data.type === 'notification') {
+    if (data.type == 'notification') {
       await this.mailerService
         .sendMail({
           from: this.configService.get<string>('EMAIL'),
@@ -25,8 +24,8 @@ export class EmailService {
             finishDate: data.finishDate,
           },
         })
-        .then((success) => {
-          console.log(success);
+        .then(() => {
+          return true;
         })
         .catch((err) => {
           console.log(err.message);

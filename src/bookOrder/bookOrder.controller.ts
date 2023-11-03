@@ -1,5 +1,5 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
-import { BooksOrder, Genres as GenresModel } from '@prisma/client';
+import { BooksOrder } from '@prisma/client';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { BookOrderService } from './bookOrder.service';

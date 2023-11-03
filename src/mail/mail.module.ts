@@ -4,20 +4,18 @@ import { ConfigService } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
+import * as process from 'process';
 
 @Module({
   imports: [
     MailerModule.forRootAsync({
-      // imports: [ConfigModule], // import module if not enabled globally
       useFactory: async () => ({
-        // transport: config.get("MAIL_TRANSPORT"),
-        // or
         transport: {
           host: 'smtp.gmail.com',
           secure: true,
           auth: {
-            user: 'grigorivveronika@gmail.com ',
-            pass: 'dnyemvwnbcwgzelk',
+            user: process.env.EMAIL,
+            pass: process.env.PASSWORD,
           },
         },
         template: {
@@ -28,10 +26,9 @@ import { join } from 'path';
           },
         },
       }),
-      // inject: [ConfigService],
     }),
   ],
   providers: [EmailService, ConfigService],
-  exports: [EmailService], // 👈 export for DI
+  exports: [EmailService],
 })
 export class MailModule {}

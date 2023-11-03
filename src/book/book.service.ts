@@ -7,7 +7,6 @@ import { BookRepository } from './book.repository';
 import { CreateBookRequestDto } from './dto/request';
 import { UpdateBookRequestDto } from './dto/request';
 import { Books } from '@prisma/client';
-import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class BookService {

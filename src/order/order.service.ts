@@ -1,20 +1,19 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/request/create-order';
 import { OrderRepository } from './order.repository';
-import { BookService } from '../book/book.service';
 import { Orders } from '@prisma/client';
 import { newExpDate } from '../shared/util/date';
 import { UserService } from '../user/user.service';
-import constants from '../shared/util/constants';
 import { EmailService } from '../mail/mail.service';
 import { BookOrderService } from '../bookOrder/bookOrder.service';
-import { indexOf } from 'lodash';
+import constants from '../shared/util/constants';
+import { MyLogger } from '../modules/logger/logger.service';
 
 @Injectable()
 export class OrderService {
   constructor(
     private orderRepository: OrderRepository,
-    private bookService: BookService,
+    private loggerService: MyLogger,
     private mailService: EmailService,
     private booksOrderService: BookOrderService,
     private userService: UserService
@@ -22,6 +21,13 @@ export class OrderService {
 
   async createNew(id: string, data: CreateOrderDto): Promise<Orders> {
     try {
+      const user = await this.getUserById(id);
+
+      if (user.length >= 5) {
+        throw new InternalServerErrorException(
+          'Sorry order limit is reached for you'
+        );
+      }
       const { books, term } = data;
 
       const create = books.map((item) => {
@@ -54,13 +60,14 @@ export class OrderService {
   }
 
   async getAll(): Promise<any> {
+    this.loggerService.log('CRON- REMINDER ABOUT EXPIRE ORDERS');
     const orders = await this.orderRepository.findAll();
 
     const tommorowDate = await newExpDate('1d');
     const filteredOrders = orders.filter(
       (item) => item.finishDate.getDate() === new Date(tommorowDate).getDate()
     );
-    let objectForEmail = [];
+    const objectForEmail = [];
 
     await Promise.all(
       filteredOrders.map(async (item) => {
@@ -83,32 +90,44 @@ export class OrderService {
           orderInfo,
           orderId: item.id,
         });
-
-        // await this.mailService.sendEmail({});
-        // return objectForEmail;
       })
     );
 
-    await this.mailService.sendEmail({});
-
     objectForEmail.map((item) => {
-      //TODO extract bookTitle
       this.mailService.sendEmail({
         finishDate: item.finishDate,
-        email: item.email,
-        login: item.login,
+        email: item.userInfo.email,
+        login: item.userInfo.login,
+        bookTitle: item.orderInfo,
+        type: 'notification',
       });
     });
+
     return objectForEmail;
   }
 
   async getById(id: string): Promise<Orders> {
     return await this.orderRepository.findOne(id);
   }
+  async getUserById(userId: string): Promise<Orders[]> {
+    return await this.orderRepository.findUserInOrder(userId);
+  }
 
-  async deleteById(id: string): Promise<void> {
+  async deleteOrders(): Promise<any> {
     try {
-      return await this.orderRepository.delete({ id: id });
+      const orders = await this.orderRepository.findAll();
+
+      const todayDate = constants.currentDate.toISOString();
+
+      Promise.all(
+        orders.map(async (item) => {
+          if (item.finishDate.getDate() < new Date(todayDate).getDate()) {
+            await this.orderRepository.delete(item.id);
+          }
+        })
+      );
+
+      return { message: 'Order list successfuly updated' };
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

@@ -9,14 +9,18 @@
     Dear
     {{login}},
     <p>Hi!</p>
-    <p>You rent book <strong> {{bookTitle}}</strong> on SmartLib platform</p>
+    <p>You rent book
+      <strong>
+        {{#each bookTitle}}
+          <p>{{title}}</p>
+        {{/each}}</strong>
+      on SmartLib platform</p>
     <p>We hope this message finds you well. We want to remind you that your
-      current book rental is scheduled to end tomorrow, [End Date]. We hope
-      you've enjoyed your reading experience so far! To ensure a smooth return
-      process, please take note of the following details:
+      current book rental is scheduled to end tomorrow. We hope you've enjoyed
+      your reading experience so far! To ensure a smooth return process, please
+      take note of the following details:
     </p>
-    <p>Book Title:
-      {{bookTitle}}
+    <p>
       Rental End Date:
       {{finishDate}}
     </p>
