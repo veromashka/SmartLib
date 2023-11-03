@@ -16,7 +16,6 @@ export class BookService {
     try {
       const { title, author, releaseDate, category, genres, price, currency } =
         data;
-
       const editedDate = new Date(releaseDate);
 
       const create = genres.map((genre) => {
