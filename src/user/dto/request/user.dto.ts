@@ -11,16 +11,13 @@ export class UserDto {
   @IsString()
   login: string;
 
-  //TODO: remove
-  // @IsEnum(Roles)
-  // role: Roles;
-
   @IsEmail()
   email: string;
 
   @IsString()
   password: string;
 
+  @IsOptional()
   @IsBoolean()
   confirmationStatus: boolean;
 
