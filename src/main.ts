@@ -28,6 +28,7 @@ import { ValidationPipe } from '@nestjs/common';
   });
 
   app.useGlobalPipes(new ValidationPipe());
+  app.enableCors();
 
   await app.listen(3000);
 })();
