@@ -1,21 +1,26 @@
-# Base image
 FROM node:18
 
-# Create app directory
-WORKDIR /usr/src/app/
+WORKDIR /app
 
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY package*.json ./
+COPY prisma ./prisma/
+
 # Install app dependencies
 RUN npm install
+# Generate prisma client, leave out if generating in `postinstall` script
+RUN npx prisma generate
+RUN npx prisma migrate dev
 
-# Bundle app source
 COPY . .
 
-RUN npx prisma generate
-# Creates a "dist" folder with the production build
 RUN npm run build
 
+FROM node:12
+
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/dist ./dist
+
 EXPOSE 3000
-# Start the server using the production build
-CMD npm run dev
+CMD ["npm", "run", "start:dev"]

@@ -1,20 +1,28 @@
-version: '1.0'
-
-networks:
-  db_net:
-    driver: bridge
+version: '2.18.1'
 
 services:
   database:
     container_name: smart-lib
-    image: smart-lib
-    ports:
-      - '5432:5432'
-    # volumes:
-    # - /data/postgres:/var/lib/postgresql
-    networks:
-      - db_net
+    image: postgres
+    restart: always
     environment:
+      POSTGRES_HOST: localhost
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: user
       POSTGRES_DB: library
+
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    container_name: nest-pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=pgadmin4
+    ports:
+      - '5050:80'
+    depends_on:
+      - database
