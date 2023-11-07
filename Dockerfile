@@ -10,6 +10,7 @@ COPY prisma ./prisma/
 RUN npm install
 # Generate prisma client, leave out if generating in `postinstall` script
 RUN npx prisma generate
+RUN npx prisma migrate dev
 
 COPY . .
 
