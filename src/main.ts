@@ -29,5 +29,5 @@ import { ValidationPipe } from '@nestjs/common';
 
   app.useGlobalPipes(new ValidationPipe());
 
-  await app.listen(80);
+  await app.listen(8080);
 })();

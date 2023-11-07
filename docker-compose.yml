@@ -10,11 +10,24 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: user
       POSTGRES_DB: library
-
     volumes:
       - ./pgdata:/var/lib/postgresql/data
     ports:
       - '5432:5432'
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smart-lib-api
+    environment:
+      - PORT=8080
+    ports:
+      - '80:8080'
+    depends_on:
+      - database
+    volumes:
+      - ./src:/app/src
+
   pgadmin:
     image: dpage/pgadmin4
     restart: always
