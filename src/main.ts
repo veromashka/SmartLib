@@ -29,5 +29,7 @@ import { ValidationPipe } from '@nestjs/common';
 
   app.useGlobalPipes(new ValidationPipe());
 
-  await app.listen(8080);
+  await app.listen(8080, () => {
+    console.log('Server is running on port 8080');
+  });
 })();

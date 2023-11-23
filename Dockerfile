@@ -1,24 +1,20 @@
-FROM node:18
+FROM node:18-alpine
 
-WORKDIR /app
+RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
+WORKDIR /home/node/app
+
 COPY package*.json ./
-COPY prisma ./prisma/
 
-# Install app dependencies
+# USER node
+
+COPY . /home/node/app/
+EXPOSE 8080
+
 RUN npm install
-# Generate prisma client, leave out if generating in `postinstall` script
 RUN npx prisma generate
-RUN npx prisma migrate dev
-
-COPY . .
-
 RUN npm run build
 
-EXPOSE 80
-#COPY --from=builder /app/node_modules ./node_modules
-#COPY --from=builder /app/package*.json ./package*.json
-#COPY --from=builder /app/dist ./dist
+COPY --chown=node:node . .
 
-CMD [ "node", "dist/main.js" ]
+CMD [ "npm", "run", "start:prod" ]

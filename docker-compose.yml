@@ -1,19 +1,20 @@
-version: '2.18.1'
+version: '3.8'
 
 services:
   database:
-    container_name: smart-lib
-    image: postgres
+    container_name: smart-lib-db
+    image: postgres:latest
     restart: always
     environment:
-      POSTGRES_HOST: localhost
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: user
-      POSTGRES_DB: library
-    volumes:
-      - ./pgdata:/var/lib/postgresql/data
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=user
+      - POSTGRES_DB=library
+      - POSTGRES_HOST_AUTH_METHOD=trust
     ports:
       - '5432:5432'
+    networks:
+      - db_net
+
   app:
     build:
       context: .
@@ -22,11 +23,11 @@ services:
     environment:
       - PORT=8080
     ports:
-      - '80:8080'
+      - '8080:8080'
     depends_on:
       - database
-    volumes:
-      - ./src:/app/src
+    networks:
+      - db_net
 
   pgadmin:
     image: dpage/pgadmin4
@@ -39,3 +40,10 @@ services:
       - '5050:80'
     depends_on:
       - database
+    networks:
+      - db_net
+
+
+networks:
+  db_net:
+    driver: bridge
