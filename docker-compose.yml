@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  database:
+    container_name: smart-lib-db
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=user
+      - POSTGRES_DB=library
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    ports:
+      - '5432:5432'
+    networks:
+      - db_net
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smart-lib-api
+    environment:
+      - PORT=8080
+    ports:
+      - '8080:8080'
+    depends_on:
+      - database
+    networks:
+      - db_net
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    container_name: nest-pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=pgadmin4
+    ports:
+      - '5050:80'
+    depends_on:
+      - database
+    networks:
+      - db_net
+
+
+networks:
+  db_net:
+    driver: bridge

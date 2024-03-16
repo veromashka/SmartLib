@@ -5,6 +5,8 @@ import { PrismaService } from 'src/prisma.service';
 import { BookRepository } from './book.repository';
 import { GenreService } from '../genre/genre.service';
 import { GenreRepository } from '../genre/genre.repository';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   providers: [
@@ -12,7 +14,9 @@ import { GenreRepository } from '../genre/genre.repository';
     BookRepository,
     GenreService,
     GenreRepository,
+    ConfigService,
     PrismaService,
+    JwtService,
   ],
   controllers: [BookController],
   exports: [BookService],

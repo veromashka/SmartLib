@@ -1,7 +1,13 @@
 import { Genres } from '@prisma/client';
 import { GenreRepository } from './genre.repository';
-import { CreateGenreRequestDto } from './dto/request/create-genre.dto';
-import { Logger, Injectable } from '@nestjs/common';
+import { CreateGenreRequestDto } from './dto/request';
+import {
+  Logger,
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 
 @Injectable()
 export class GenreService {
@@ -10,17 +16,24 @@ export class GenreService {
 
   //CREATE
   async createGenre(data: CreateGenreRequestDto): Promise<Genres> {
-    return this.genreRepository.create({ ...data });
+    try {
+      return this.genreRepository.create({ ...data });
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
-  async getById(id: string) {
-    return await this.genreRepository.getById(id);
+  async getById(id: string): Promise<Genres> {
+    try {
+      return await this.genreRepository.getById(id);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
   }
-  async getAll() {
-    return await this.genreRepository.getAll();
+  async getAll(): Promise<Genres[]> {
+    try {
+      return await this.genreRepository.getAll();
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
-  //TODO
-  // async deleteGenreById(): Promise<Genres[]> {
-  //   this.logger.log('GET ALL BOOKS');
-  //   return this.prisma.genres.findMany();
-  // }
 }

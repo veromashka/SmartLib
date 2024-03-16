@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Users } from '@prisma/client';
-import { AuthService } from '../../auth/auth.service';
+import { AuthService } from '../auth.service';
 
 @Injectable()
 export class TokenInterceptor implements NestInterceptor {
@@ -17,7 +17,7 @@ export class TokenInterceptor implements NestInterceptor {
 
   intercept(
     context: ExecutionContext,
-    next: CallHandler<Users>,
+    next: CallHandler<Users>
   ): Observable<Users> {
     return next.handle().pipe(
       map((user) => {
@@ -26,7 +26,7 @@ export class TokenInterceptor implements NestInterceptor {
 
         response.header('Authorization', `Bearer ${token}`);
         return user;
-      }),
+      })
     );
   }
 }

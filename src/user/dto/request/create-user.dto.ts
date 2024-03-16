@@ -1,26 +1,18 @@
 import { UserDto } from './user.dto';
-import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
-import { Roles } from '../../../common/enums';
+import { IsNotEmpty, Matches } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto extends UserDto {
+  @ApiProperty({ description: 'Login', example: 'veromashka' })
   @IsNotEmpty()
   login: string;
 
-  //TODO: remove
-  @IsOptional()
-  @IsEnum(Roles)
-  role: Roles;
-
+  @ApiProperty({ description: 'Email', example: 'test@gmail.com' })
   @IsNotEmpty()
   email: string;
 
+  @ApiProperty({ description: 'Password', example: 'Password1*' })
   @IsNotEmpty()
+  @Matches('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$')
   password: string;
-
-  //TODO: remove
-  @IsOptional()
-  confirmationStatus: boolean;
-
-  @IsOptional()
-  confirmationNumber: number;
 }

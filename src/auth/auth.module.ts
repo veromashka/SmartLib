@@ -6,11 +6,23 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { AuthRepository } from './auth.repository';
 import { UserRepository } from '../user/user.repository';
-import { JwtService } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { EmailService } from '../mail/mail.service';
 import { ConfigService } from '@nestjs/config';
+import { JwtStrategy } from './strategy/jwt-strategy';
+import { UserModule } from '../user/user.module';
+import { PassportModule } from '@nestjs/passport';
+import * as process from 'process';
 
 @Module({
+  imports: [
+    UserModule,
+    PassportModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '20h' },
+    }),
+  ],
   providers: [
     AuthService,
     AuthRepository,
@@ -20,6 +32,7 @@ import { ConfigService } from '@nestjs/config';
     ConfigService,
     JwtService,
     PrismaService,
+    JwtStrategy,
   ],
   controllers: [AuthController],
   exports: [AuthService],

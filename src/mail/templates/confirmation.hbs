@@ -1,7 +1,17 @@
-<p>Hey {{ name }},</p>
-<p>Please click below to confirm your email</p>
-<p>
-  <a >Confirm {{token}}</a>
-</p>
-
-<p>If you did not request this email you can safely ignore it.</p>
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Email Confirmation</h1>
+    <p>Hi!</p>
+    <p>You signed up to SmartLib platform from {{email}}</p>
+    <p>Your secret number is: <strong> {{token}}</strong></p>
+    <p>To continue registration please type this code in input</p>
+    <p>If you did not request this email you can safely ignore it.</p>
+    <p>Sincerely,</p>
+    <p>Your SmartLib </p>
+  </body>
+</html>

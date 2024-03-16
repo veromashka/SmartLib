@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateGenreRequestDto } from './dto/request/create-genre.dto';
+import { CreateGenreRequestDto } from './dto/request';
 import { PrismaService } from 'src/prisma.service';
 import { Genres } from '@prisma/client';
 
@@ -7,11 +7,11 @@ import { Genres } from '@prisma/client';
 export class GenreRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(createDataBody: CreateGenreRequestDto) {
+  async create(createDataBody: CreateGenreRequestDto): Promise<Genres> {
     return await this.prisma.genres.create({ data: createDataBody });
   }
 
-  async getById(id: string) {
+  async getById(id: string): Promise<Genres> {
     return await this.prisma.genres.findUnique({ where: { id } });
   }
 

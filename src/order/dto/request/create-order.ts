@@ -1,16 +1,26 @@
 import { OrderDto } from './order.dto';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsArray,
+  IsNumber,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateOrderDto extends OrderDto {
-  @IsNotEmpty()
-  paid: boolean;
-
-  @IsNotEmpty()
+  @ApiProperty({ description: 'Termin', example: 22 })
+  @IsNumber()
+  @Min(1)
+  @Max(90)
   term: number;
 
-  @IsNotEmpty()
-  bookId: string;
-
-  @IsOptional()
-  createdAt: Date;
+  @ApiProperty({ description: 'Book', example: ['book.id'] })
+  @IsArray()
+  @IsString({ each: true })
+  @ArrayMinSize(1)
+  @ArrayMaxSize(5)
+  books: string[];
 }
