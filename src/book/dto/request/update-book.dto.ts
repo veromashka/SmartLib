@@ -11,7 +11,9 @@ import {
   MaxLength,
   Min,
   MinLength,
+  MinDate,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { Categories, Currencies } from 'src/common/enums';
 import { ApiProperty } from '@nestjs/swagger';
 import constants from '../../../shared/util/constants';
@@ -33,8 +35,9 @@ export class UpdateBookRequestDto {
 
   @ApiProperty({ description: 'Release Year', example: '2003-10-02' })
   @IsOptional()
-  @IsDate()
+  @Type(() => Date)
   @MaxDate(new Date(constants.avaliableDate))
+  @MinDate(new Date('1800-01-01'))
   releaseDate: Date;
 
   @ApiProperty({ description: 'Price', example: 200 })

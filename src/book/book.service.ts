@@ -58,6 +58,10 @@ export class BookService {
 
   async update(id: string, data: UpdateBookRequestDto): Promise<Books> {
     try {
+      if (data.releaseDate) {
+        data = { ...data, releaseDate: new Date(data.releaseDate) };
+      }
+
       return await this.bookRepository.update(id, data);
     } catch (e) {
       throw new BadRequestException(e.message, {

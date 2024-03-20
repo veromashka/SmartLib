@@ -56,7 +56,7 @@ export class BookController {
     @Param('id') id: string,
     @Body() data: UpdateBookRequestDto
   ): Promise<BookModel> {
-    return this.bookService.update(id, data);
+    return await this.bookService.update(id, data);
   }
 
   @Delete(':id')

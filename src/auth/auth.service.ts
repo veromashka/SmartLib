@@ -69,6 +69,7 @@ export class AuthService {
     try {
       const user = await this.userService.findById(id);
 
+      //TODO: to trim id
       if (user.confirmationStatus) {
         throw new BadRequestException('This email has already been confirmed');
       }

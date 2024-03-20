@@ -51,7 +51,7 @@ model Books {
   price       Int
   currency    Currencies
   author      String
-  releaseDate DateTime
+  releaseDate DateTime  @default(now())
   category    Categories   @default(FOR_CHILDREN)
   genre       BookGenres[]
   orders      BooksOrder[]
