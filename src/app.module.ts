@@ -5,6 +5,7 @@ import { GenreModule } from './genre/genre.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LoggerMiddleware } from './logger/logger.middleware';
+import { JwtMiddleware } from './auth/middlewares/jwt.middleware';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
@@ -14,6 +15,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BookOrderModule } from './bookOrder/bookOrder.module';
 import { LoggerModule } from './modules/logger/logger.module';
+import { OrderController } from './order/order.controller';
 
 @Module({
   imports: [
@@ -35,5 +37,6 @@ import { LoggerModule } from './modules/logger/logger.module';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {
     consumer.apply(LoggerMiddleware).forRoutes('*');
+    consumer.apply(JwtMiddleware).forRoutes(OrderController);
   }
 }

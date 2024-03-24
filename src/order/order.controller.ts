@@ -4,7 +4,7 @@ import {
   Body,
   UseFilters,
   UseGuards,
-  Param,
+  Req,
   Get,
   Delete,
 } from '@nestjs/common';
@@ -16,6 +16,8 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
+import { UserRequest } from '../auth/middlewares/jwt.middleware';
+
 @Controller('order')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('accessToken')
@@ -26,13 +28,20 @@ export class OrderController {
   @ApiResponse({ status: 201, description: 'Created.' })
   @ApiResponse({ status: 401, description: 'Unatorized.' })
   @ApiResponse({ status: 500, description: 'Orders limit reached.' })
-  @Post('/:id')
+  @Post('/new')
   async createOrder(
-    @Param('id') id: string,
+    @Req() req: UserRequest,
     @Body() data: CreateOrderDto
   ): Promise<Orders> {
-    return this.orderService.createNew(id, data);
+    return this.orderService.createNew(req, data);
   }
+
+  // @Get()
+  // getSpecialInfo(@Req() req: Request) {
+  //   const user = req.user; // Access user information from the request object
+  //   // Here, you can access user data and return it as needed
+  //   return { user };
+  // }
 
   @Cron(CronExpression.EVERY_DAY_AT_1PM)
   @Get('/all')

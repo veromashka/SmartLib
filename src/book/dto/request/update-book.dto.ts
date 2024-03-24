@@ -1,16 +1,10 @@
 import {
   ArrayMinSize,
   IsArray,
-  IsDate,
   IsEnum,
-  IsNumber,
   IsOptional,
   IsString,
-  Max,
   MaxDate,
-  MaxLength,
-  Min,
-  MinLength,
   MinDate,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -21,16 +15,10 @@ import constants from '../../../shared/util/constants';
 export class UpdateBookRequestDto {
   @ApiProperty({ description: 'Title', example: 'Harry Poter' })
   @IsOptional()
-  @IsString()
-  @MinLength(3)
-  @MaxLength(20)
   title: string;
 
   @ApiProperty({ description: 'Author', example: 'Joan Rouling' })
   @IsOptional()
-  @IsString()
-  @MinLength(3)
-  @MaxLength(20)
   author: string;
 
   @ApiProperty({ description: 'Release Year', example: '2003-10-02' })
@@ -42,9 +30,6 @@ export class UpdateBookRequestDto {
 
   @ApiProperty({ description: 'Price', example: 200 })
   @IsOptional()
-  @IsNumber()
-  @Min(1)
-  @Max(99999)
   price: number;
 
   @ApiProperty({

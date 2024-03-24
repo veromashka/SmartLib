@@ -1,13 +1,14 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/request/create-order';
 import { OrderRepository } from './order.repository';
-import { Orders } from '@prisma/client';
+import { Orders, Users } from '@prisma/client';
 import { newExpDate } from '../shared/util/date';
 import { UserService } from '../user/user.service';
 import { EmailService } from '../mail/mail.service';
 import { BookOrderService } from '../bookOrder/bookOrder.service';
 import constants from '../shared/util/constants';
 import { MyLogger } from '../modules/logger/logger.service';
+import { UserRequest } from 'src/auth/middlewares/jwt.middleware';
 
 @Injectable()
 export class OrderService {
@@ -19,15 +20,19 @@ export class OrderService {
     private userService: UserService
   ) {}
 
-  async createNew(id: string, data: CreateOrderDto): Promise<Orders> {
+  async createNew(req: UserRequest, data: CreateOrderDto): Promise<Orders> {
     try {
-      const user = await this.getUserById(id);
+      const user = await this.getUserById(req.user.id);
 
-      if (user.length >= 5) {
-        throw new InternalServerErrorException(
-          'Sorry order limit is reached for you'
-        );
-      }
+      console.log(req.user.id);
+      // const userId =
+
+      //TODO: optimyze it
+      // if (user.length >= 5) {
+      //   throw new InternalServerErrorException(
+      //     'Sorry order limit is reached for you'
+      //   );
+      // }
       const { books, term } = data;
 
       const create = books.map((item) => {
@@ -47,7 +52,7 @@ export class OrderService {
         finishDate: new Date(dateOfEnd).toISOString(),
         user: {
           connect: {
-            id: id,
+            id: user.id,
           },
         },
         books: { create },
@@ -109,8 +114,10 @@ export class OrderService {
   async getById(id: string): Promise<Orders> {
     return await this.orderRepository.findOne(id);
   }
-  async getUserById(userId: string): Promise<Orders[]> {
-    return await this.orderRepository.findUserInOrder(userId);
+
+  //TODO: optimyze this
+  async getUserById(userId: string): Promise<Users> {
+    return await this.userService.findById(userId);
   }
 
   async deleteOrders(): Promise<any> {
