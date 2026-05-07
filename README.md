@@ -1,73 +1,67 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# SmartLib
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Online library CRM — books catalog, reading notes, AI recommendations.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Repository layout
 
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
-
-```bash
-$ npm install
+```
+SmartLib/
+├── backend/      NestJS + Prisma/PostgreSQL API
+│   └── README.md
+├── frontend/     React + Redux Toolkit + RTK Query SPA
+│   └── README.md
+├── .github/      Shared GitHub config (PR template, future CI)
+└── .gitignore
 ```
 
-## Running the app
+Each side is a self-contained Node project with its own `package.json`,
+lockfile and tooling. They share nothing at install time — pick whichever
+half you need to work on, or run both.
+
+## Run locally
+
+Open two terminals:
 
 ```bash
-# development
-$ npm run start
+# 1) Backend — NestJS on :3000
+cd backend
+npm install
+cp .env.example .env          # fill JWT_SECRET, DATABASE_URL, OPENAI_API_KEY
+npx prisma migrate dev
+npm run start:dev
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+# 2) Frontend — Vite on :5173 (proxies /api → :3000)
+cd frontend
+npm install
+npm run dev
 ```
 
-## Test
+Open http://localhost:5173. Swagger docs live at http://localhost:3000/api/docs.
 
-```bash
-# unit tests
-$ npm run test
+## What's where
 
-# e2e tests
-$ npm run test:e2e
+| Concern                                  | Lives in                          |
+| ---------------------------------------- | --------------------------------- |
+| REST API, auth, business logic           | `backend/src/`                    |
+| Database schema & migrations             | `backend/prisma/`                 |
+| External book search (Google / OpenLib)  | `backend/src/books-parser/`       |
+| AI recommendations (OpenAI)              | `backend/src/ai/`                 |
+| UI design system (buttons, modals, …)    | `frontend/src/shared/ui/`         |
+| Feature slices + RTK Query endpoints     | `frontend/src/features/`          |
+| Pages & routing                          | `frontend/src/pages/`, `app/`     |
 
-# test coverage
-$ npm run test:cov
-```
+## Conventions
 
-## Support
+- Each side has its own README with deeper architecture notes.
+- `.env` files are git-ignored; `.env.example` documents what to set.
+- Migrations live in `backend/prisma/migrations/`; never edit applied ones.
+- Frontend never imports from backend (and vice versa) — they communicate
+  only over HTTP, through the typed API in `frontend/src/features/*/api.ts`.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Future considerations
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+- npm workspaces / pnpm workspaces if shared types grow (e.g., a `shared/`
+  package for DTO/contract types). For now, the front re-declares the small
+  surface it needs in `shared/types/`.
+- CI: add GitHub Actions in `.github/workflows/` running
+  `cd backend && npm test` and `cd frontend && npm run typecheck`.

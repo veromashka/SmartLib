@@ -1,10 +1,15 @@
+# --- Build output (matches in both backend/ and frontend/) ---
+**/dist/
+**/build/
+**/node_modules/
+**/.vite/
 
-# compiled output
-/dist
-/node_modules
-
+# --- Env files ---
 .env
-# Logs
+.env.*
+!.env.example
+
+# --- Logs ---
 logs
 *.log
 npm-debug.log*
@@ -13,14 +18,15 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-# OS
+# --- Test artifacts ---
+**/coverage/
+**/.nyc_output/
+
+# --- OS ---
 .DS_Store
+Thumbs.db
 
-# Tests
-/coverage
-/.nyc_output
-
-# IDEs and editors
+# --- IDEs ---
 /.idea
 .project
 .classpath
@@ -29,7 +35,7 @@ lerna-debug.log*
 .settings/
 *.sublime-workspace
 
-# IDE - VSCode
+# --- VSCode (allow shared workspace settings) ---
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json

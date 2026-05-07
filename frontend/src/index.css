@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ----- Base typography & smooth surfaces ----- */
+:root {
+  color-scheme: light;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  @apply font-sans text-ink antialiased;
+  background:
+    radial-gradient(1200px 600px at -10% -20%, theme('colors.brand.100') 0%, transparent 60%),
+    radial-gradient(900px 500px at 110% 10%, theme('colors.brand.50')  0%, transparent 55%),
+    theme('colors.surface.subtle');
+}
+
+/* Reusable focus ring — consistent across inputs/buttons. */
+@layer base {
+  :where(button, [role='button'], input, select, textarea):focus-visible {
+    @apply outline-none ring-2 ring-brand-300/60 ring-offset-2 ring-offset-surface;
+  }
+}
+
+/* Skeleton shimmer */
+@layer utilities {
+  .skeleton {
+    @apply relative overflow-hidden bg-brand-50;
+    background-image: linear-gradient(
+      90deg,
+      theme('colors.brand.50') 0px,
+      theme('colors.brand.100') 40px,
+      theme('colors.brand.50') 80px
+    );
+    background-size: 800px 100%;
+    @apply animate-shimmer;
+  }
+}
